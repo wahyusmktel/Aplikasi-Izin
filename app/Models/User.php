@@ -6,11 +6,12 @@ namespace App\Models;
 use Illuminate\Database\Eloquent\Factories\HasFactory;
 use Illuminate\Foundation\Auth\User as Authenticatable;
 use Illuminate\Notifications\Notifiable;
+use Spatie\Permission\Traits\HasRoles;
 
 class User extends Authenticatable
 {
     /** @use HasFactory<\Database\Factories\UserFactory> */
-    use HasFactory, Notifiable;
+    use HasFactory, Notifiable, HasRoles;
 
     /**
      * The attributes that are mass assignable.
@@ -44,5 +45,26 @@ class User extends Authenticatable
             'email_verified_at' => 'datetime',
             'password' => 'hashed',
         ];
+    }
+
+    // Relasi untuk siswa: satu siswa hanya punya satu wali kelas
+    public function waliKelas()
+    {
+        return $this->belongsTo(User::class, 'wali_kelas_id');
+    }
+
+    // Relasi untuk wali kelas: satu wali kelas punya banyak siswa
+    public function siswa()
+    {
+        return $this->hasMany(User::class, 'wali_kelas_id');
+    }
+
+    // Relasi dari User ke data induk siswanya
+    public function masterSiswa() {
+        return $this->hasOne(MasterSiswa::class);
+    }
+    // Relasi dari User (Wali Kelas) ke rombel yang diampunya
+    public function rombels() {
+        return $this->hasMany(Rombel::class, 'wali_kelas_id');
     }
 }
