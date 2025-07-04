@@ -82,9 +82,6 @@
                                                             </p>
                                                         </div>
 
-                                                        <!-- ================================== -->
-                                                        <!--           BAGIAN PERBAIKAN         -->
-                                                        <!-- ================================== -->
                                                         <input type="hidden"
                                                             :name="'jadwal[{{ $day }}][{{ $jamKe }}][mata_pelajaran_id]'"
                                                             :value="jadwal['{{ $day }}-{{ $jamKe }}']
@@ -93,9 +90,6 @@
                                                             :name="'jadwal[{{ $day }}][{{ $jamKe }}][master_guru_id]'"
                                                             :value="jadwal['{{ $day }}-{{ $jamKe }}']
                                                                 ?.master_guru_id">
-                                                        <!-- ================================== -->
-                                                        <!--         BATAS PERBAIKAN            -->
-                                                        <!-- ================================== -->
                                                     </label>
                                                 </td>
                                             @endforeach
@@ -169,7 +163,7 @@
                             mata_pelajaran_id: this.selectedMapelId,
                             master_guru_id: this.selectedGuruId,
                             // Tambahkan data lain untuk display
-                            mapel: selectedMapel,
+                            mata_pelajaran: selectedMapel,
                             guru: this.getGuruById(this.selectedGuruId)
                         };
                         selectedMapel.sisa_jam--;
@@ -196,7 +190,7 @@
                     return this.guru.find(g => g.id == id);
                 },
                 getMapelName(day, jamKe) {
-                    return this.jadwal[`${day}-${jamKe}`]?.mapel?.nama_mapel || '';
+                    return this.jadwal[`${day}-${jamKe}`]?.mata_pelajaran?.nama_mapel || '';
                 },
                 getGuruName(day, jamKe) {
                     return this.jadwal[`${day}-${jamKe}`]?.guru?.nama_lengkap || '';
