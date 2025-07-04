@@ -67,4 +67,13 @@ class User extends Authenticatable
     public function rombels() {
         return $this->hasMany(Rombel::class, 'wali_kelas_id');
     }
+
+    /**
+     * Mendefinisikan relasi dari User ke Perizinan.
+     * Satu user (siswa) bisa memiliki banyak perizinan.
+     */
+    public function perizinan()
+    {
+        return $this->hasMany(Perizinan::class);
+    }
 }

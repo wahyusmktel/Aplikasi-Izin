@@ -10,6 +10,12 @@ use App\Http\Controllers\MasterData\MasterSiswaController;
 use App\Http\Controllers\MasterData\RombelController;
 use App\Http\Controllers\Kesiswaan\MonitoringIzinController;
 use App\Http\Controllers\Kesiswaan\DashboardController;
+use App\Http\Controllers\WaliKelas\DashboardController as WaliKelasDashboardController;
+use App\Http\Controllers\Siswa\DashboardController as SiswaDashboardController;
+use App\Http\Controllers\BK\DashboardController as BKDashboardController;
+use App\Http\Controllers\BK\MonitoringController as BKMonitoringController;
+use App\Http\Controllers\Piket\DashboardController as PiketDashboardController;
+use App\Http\Controllers\Piket\MonitoringController as PiketMonitoringController;
 
 Route::get('/', function () {
     return view('welcome');
@@ -35,6 +41,7 @@ Route::middleware(['auth', 'verified'])->group(function () {
 
     // Grup Route untuk Wali Kelas
     Route::middleware(['role:Wali Kelas'])->prefix('wali-kelas')->name('wali-kelas.')->group(function () {
+        Route::get('/dashboard', [WaliKelasDashboardController::class, 'index'])->name('dashboard.index');
         Route::get('/perizinan', [WaliKelasPerizinanController::class, 'index'])->name('perizinan.index');
         Route::patch('/perizinan/{perizinan}/approve', [WaliKelasPerizinanController::class, 'approve'])->name('perizinan.approve');
         Route::patch('/perizinan/{perizinan}/reject', [WaliKelasPerizinanController::class, 'reject'])->name('perizinan.reject');
@@ -59,6 +66,23 @@ Route::middleware(['auth', 'verified'])->group(function () {
     Route::middleware(['role:Waka Kesiswaan'])->prefix('kesiswaan')->name('kesiswaan.')->group(function () {
         Route::get('/dashboard', [DashboardController::class, 'index'])->name('dashboard.index');
         Route::get('/monitoring-izin', [MonitoringIzinController::class, 'index'])->name('monitoring-izin.index');
+    });
+
+    // Grup Route untuk Siswa
+    Route::middleware(['role:Siswa'])->prefix('siswa')->name('siswa.')->group(function () {
+        Route::get('/dashboard', [SiswaDashboardController::class, 'index'])->name('dashboard.index');
+    });
+
+    // Grup Route untuk Guru BK
+    Route::middleware(['role:Guru BK'])->prefix('bk')->name('bk.')->group(function () {
+        Route::get('/dashboard', [BKDashboardController::class, 'index'])->name('dashboard.index');
+        Route::get('/monitoring-izin', [BKMonitoringController::class, 'index'])->name('monitoring.index');
+    });
+
+    // Grup Route untuk Guru Piket
+    Route::middleware(['role:Guru Piket'])->prefix('piket')->name('piket.')->group(function () {
+        Route::get('/dashboard', [PiketDashboardController::class, 'index'])->name('dashboard.index');
+        Route::get('/monitoring-izin', [PiketMonitoringController::class, 'index'])->name('monitoring.index');
     });
 });
 

@@ -21,11 +21,17 @@
                         </x-nav-link>
                     @endrole
                     @role('Siswa')
+                        <x-nav-link :href="route('siswa.dashboard.index')" :active="request()->routeIs('siswa.dashboard.*')">
+                            {{ __('Dashboard') }}
+                        </x-nav-link>
                         <x-nav-link :href="route('izin.index')" :active="request()->routeIs('izin.*')">
                             {{ __('Riwayat Izin') }}
                         </x-nav-link>
                     @endrole
                     @role('Wali Kelas')
+                        <x-nav-link :href="route('wali-kelas.dashboard.index')" :active="request()->routeIs('wali-kelas.dashboard.*')">
+                            {{ __('Dashboard') }}
+                        </x-nav-link>
                         <x-nav-link :href="route('wali-kelas.perizinan.index')" :active="request()->routeIs('wali-kelas.perizinan.*')">
                             {{ __('Persetujuan Izin') }}
                         </x-nav-link>
@@ -62,6 +68,27 @@
                         <x-nav-link :href="route('kesiswaan.monitoring-izin.index')" :active="request()->routeIs('kesiswaan.monitoring-izin.*')">
                             {{ __('Monitoring Izin') }}
                         </x-nav-link>
+                    @endrole
+                    <!-- Menu Guru BK -->
+                    @role('Guru BK')
+                        <div class="hidden sm:space-x-8 sm:-my-px sm:ms-10 sm:flex">
+                            <x-nav-link :href="route('bk.dashboard.index')" :active="request()->routeIs('bk.dashboard.*')">
+                                {{ __('Dashboard') }}
+                            </x-nav-link>
+                            <x-nav-link :href="route('bk.monitoring.index')" :active="request()->routeIs('bk.monitoring.*')">
+                                {{ __('Monitoring Izin') }}
+                            </x-nav-link>
+                        </div>
+                    @endrole
+                    @role('Guru Piket')
+                        <div class="hidden sm:space-x-8 sm:-my-px sm:ms-10 sm:flex">
+                            <x-nav-link :href="route('piket.dashboard.index')" :active="request()->routeIs('piket.dashboard.*')">
+                                {{ __('Dashboard') }}
+                            </x-nav-link>
+                            <x-nav-link :href="route('piket.monitoring.index')" :active="request()->routeIs('piket.monitoring.*')">
+                                {{ __('Monitoring Izin') }}
+                            </x-nav-link>
+                        </div>
                     @endrole
                 </div>
             </div>
