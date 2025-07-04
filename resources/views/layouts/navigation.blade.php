@@ -116,7 +116,9 @@
                                     <x-dropdown-link :href="route('kurikulum.master-guru.index')" :active="request()->routeIs('kurikulum.master-guru.*')">
                                         {{ __('Data Guru') }}
                                     </x-dropdown-link>
-                                    <!-- Menu kurikulum lainnya bisa ditambahkan di sini -->
+                                    <x-dropdown-link :href="route('kurikulum.jadwal-pelajaran.index')" :active="request()->routeIs('kurikulum.jadwal-pelajaran.*')">
+                                        {{ __('Jadwal Pelajaran') }}
+                                    </x-dropdown-link>
                                 </x-slot>
                             </x-dropdown>
                         </div>
