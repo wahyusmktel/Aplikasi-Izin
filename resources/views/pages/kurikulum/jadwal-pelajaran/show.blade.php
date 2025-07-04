@@ -128,14 +128,17 @@
                     });
                 },
 
+                // ==================================
+                //           BAGIAN PERBAIKAN
+                // ==================================
                 // Computed property untuk mapel yang tersedia di dropdown
                 get availableMapel() {
-                    return this.mataPelajaran.filter(mapel => mapel.sisa_jam > 0 || this.isMapelInUse(mapel.id));
+                    // Hanya tampilkan mapel yang sisa jamnya lebih dari 0
+                    return this.mataPelajaran.filter(mapel => mapel.sisa_jam > 0);
                 },
-
-                isMapelInUse(mapelId) {
-                    return Object.values(this.jadwal).some(slot => slot && slot.mata_pelajaran_id == mapelId);
-                },
+                // ==================================
+                //         BATAS PERBAIKAN
+                // ==================================
 
                 // Logika saat checkbox di-klik
                 toggleSlot(day, jamKe, event) {
@@ -162,7 +165,6 @@
                         this.jadwal[key] = {
                             mata_pelajaran_id: this.selectedMapelId,
                             master_guru_id: this.selectedGuruId,
-                            // Tambahkan data lain untuk display
                             mata_pelajaran: selectedMapel,
                             guru: this.getGuruById(this.selectedGuruId)
                         };
