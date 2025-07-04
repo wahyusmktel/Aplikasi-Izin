@@ -30,6 +30,7 @@ class MataPelajaranController extends Controller
         $request->validate([
             'kode_mapel' => 'required|string|max:10|unique:mata_pelajarans,kode_mapel',
             'nama_mapel' => 'required|string|max:255',
+            'jumlah_jam' => 'required|integer|min:0',
         ]);
 
         try {
@@ -53,6 +54,7 @@ class MataPelajaranController extends Controller
         $request->validate([
             'kode_mapel' => 'required|string|max:10|unique:mata_pelajarans,kode_mapel,' . $mataPelajaran->id,
             'nama_mapel' => 'required|string|max:255',
+            'jumlah_jam' => 'required|integer|min:0',
         ]);
 
         try {

@@ -9,6 +9,12 @@
     <x-text-input id="nama_mapel" class="block mt-1 w-full" type="text" name="nama_mapel" :value="old('nama_mapel', $mataPelajaran->nama_mapel ?? '')" required />
     <x-input-error :messages="$errors->get('nama_mapel')" class="mt-2" />
 </div>
+<div class="mt-4">
+    <x-input-label for="jumlah_jam" :value="__('Jumlah Jam Pelajaran')" />
+    <x-text-input id="jumlah_jam" class="block mt-1 w-full" type="number" name="jumlah_jam" :value="old('jumlah_jam', $mataPelajaran->jumlah_jam ?? 0)"
+        required />
+    <x-input-error :messages="$errors->get('jumlah_jam')" class="mt-2" />
+</div>
 <div class="flex items-center justify-end mt-4">
     <a href="{{ route('kurikulum.mata-pelajaran.index') }}">
         <x-secondary-button type="button">{{ __('Batal') }}</x-secondary-button>

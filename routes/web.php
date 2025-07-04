@@ -18,6 +18,7 @@ use App\Http\Controllers\Piket\DashboardController as PiketDashboardController;
 use App\Http\Controllers\Piket\MonitoringController as PiketMonitoringController;
 use App\Http\Controllers\Kurikulum\MataPelajaranController;
 use App\Http\Controllers\Kurikulum\MasterGuruController;
+use App\Http\Controllers\Kurikulum\JadwalPelajaranController;
 
 Route::get('/', function () {
     return view('welcome');
@@ -92,6 +93,9 @@ Route::middleware(['auth', 'verified'])->group(function () {
         Route::resource('mata-pelajaran', MataPelajaranController::class);
         Route::post('master-guru/{master_guru}/generate-akun', [MasterGuruController::class, 'generateAkun'])->name('master-guru.generate-akun');
         Route::resource('master-guru', MasterGuruController::class);
+        Route::get('jadwal-pelajaran', [JadwalPelajaranController::class, 'index'])->name('jadwal-pelajaran.index');
+        Route::get('jadwal-pelajaran/{rombel}', [JadwalPelajaranController::class, 'show'])->name('jadwal-pelajaran.show');
+        Route::post('jadwal-pelajaran/{rombel}', [JadwalPelajaranController::class, 'store'])->name('jadwal-pelajaran.store');
     });
 });
 

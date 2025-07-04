@@ -9,6 +9,7 @@ use Illuminate\Http\Request;
 use Illuminate\Support\Facades\DB;
 use Illuminate\Support\Facades\Hash;
 use Illuminate\Support\Facades\Log;
+use Spatie\Permission\Models\Role; // <-- Tambahkan ini
 
 class MasterGuruController extends Controller
 {
@@ -110,8 +111,8 @@ class MasterGuruController extends Controller
                 'password' => Hash::make($password),
             ]);
 
-            // Default role bisa disesuaikan, misal 'Guru Kelas'
-            // $user->assignRole('Guru Kelas');
+            // Assign role 'Guru Kelas' ke user baru
+            $user->assignRole('Guru Kelas');
 
             $masterGuru->update(['user_id' => $user->id]);
 

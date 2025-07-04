@@ -22,6 +22,8 @@
                                     </th>
                                     <th class="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase">Nama
                                         Mata Pelajaran</th>
+                                    <th class="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase">Jumlah
+                                        Jam</th>
                                     <th class="px-6 py-3 text-right text-xs font-medium text-gray-500 uppercase">Aksi
                                     </th>
                                 </tr>
@@ -31,6 +33,7 @@
                                     <tr>
                                         <td class="px-6 py-4 whitespace-nowrap">{{ $item->kode_mapel }}</td>
                                         <td class="px-6 py-4 whitespace-nowrap">{{ $item->nama_mapel }}</td>
+                                        <td class="px-6 py-4 whitespace-nowrap">{{ $item->jumlah_jam }} Jam</td>
                                         <td class="px-6 py-4 whitespace-nowrap text-right text-sm font-medium">
                                             <a href="{{ route('kurikulum.mata-pelajaran.edit', $item->id) }}"
                                                 class="text-indigo-600 hover:text-indigo-900">Edit</a>

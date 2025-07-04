@@ -23,4 +23,9 @@ class MasterGuru extends Model
     {
         return $this->belongsTo(User::class);
     }
+
+    public function jadwalPelajaran()
+    {
+        return $this->hasMany(JadwalPelajaran::class);
+    }
 }
