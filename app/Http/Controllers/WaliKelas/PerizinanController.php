@@ -8,6 +8,8 @@ use App\Models\Perizinan;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Auth;
 use Illuminate\Support\Facades\Log;
+use App\Notifications\IzinDisetujuiNotification;
+use App\Notifications\IzinDitolakNotification;
 
 class PerizinanController extends Controller
 {
@@ -78,6 +80,9 @@ class PerizinanController extends Controller
                 'disetujui_oleh' => Auth::id(),
             ]);
 
+            // Kirim notifikasi ke siswa
+            $perizinan->user->notify(new IzinDisetujuiNotification($perizinan));
+
             toast('Pengajuan izin telah disetujui.', 'success');
             return redirect()->back();
 
@@ -112,6 +117,9 @@ class PerizinanController extends Controller
                 'alasan_penolakan' => $request->alasan_penolakan,
                 'disetujui_oleh' => Auth::id(),
             ]);
+
+            // Kirim notifikasi ke siswa
+            $perizinan->user->notify(new IzinDitolakNotification($perizinan));
 
             toast('Pengajuan izin telah ditolak.', 'info');
             return redirect()->back();

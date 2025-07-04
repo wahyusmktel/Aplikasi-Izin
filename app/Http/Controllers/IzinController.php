@@ -8,6 +8,7 @@ use Illuminate\Support\Facades\Auth;
 use Illuminate\Support\Facades\Log;
 use Illuminate\Support\Facades\Storage;
 use Illuminate\Support\Facades\Validator;
+use App\Notifications\PengajuanIzinMasuk;
 
 class IzinController extends Controller
 {
@@ -56,7 +57,7 @@ class IzinController extends Controller
                 $dokumenPath = $request->file('dokumen_pendukung')->store('public/dokumen_izin');
             }
 
-            Perizinan::create([
+            $perizinan = Perizinan::create([
                 'user_id' => Auth::id(),
                 'tanggal_izin' => $request->tanggal_izin,
                 'jenis_izin' => 'izin',
@@ -64,6 +65,13 @@ class IzinController extends Controller
                 'dokumen_pendukung' => $dokumenPath,
                 'status' => 'diajukan',
             ]);
+
+            $masterSiswa = Auth::user()->masterSiswa;
+            $rombelAktif = $masterSiswa->rombels()->where('tahun_ajaran', '2024/2025')->first();
+            if ($rombelAktif && $rombelAktif->waliKelas) {
+                $waliKelas = $rombelAktif->waliKelas;
+                $waliKelas->notify(new PengajuanIzinMasuk($perizinan));
+            }
 
             toast('Pengajuan izin berhasil dikirim!', 'success');
             return redirect()->route('izin.index');

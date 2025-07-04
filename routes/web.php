@@ -8,6 +8,8 @@ use App\Http\Controllers\WaliKelas\PerizinanController as WaliKelasPerizinanCont
 use App\Http\Controllers\KelasController;
 use App\Http\Controllers\MasterData\MasterSiswaController;
 use App\Http\Controllers\MasterData\RombelController;
+use App\Http\Controllers\Kesiswaan\MonitoringIzinController;
+use App\Http\Controllers\Kesiswaan\DashboardController;
 
 Route::get('/', function () {
     return view('welcome');
@@ -52,6 +54,12 @@ Route::middleware(['auth', 'verified'])->group(function () {
         Route::delete('rombel/{rombel}/remove-siswa/{siswa}', [RombelController::class, 'removeSiswa'])->name('rombel.remove-siswa');
         Route::resource('rombel', RombelController::class);
     });
+
+    // Grup Route untuk Kesiswaan
+    Route::middleware(['role:Waka Kesiswaan'])->prefix('kesiswaan')->name('kesiswaan.')->group(function () {
+        Route::get('/dashboard', [DashboardController::class, 'index'])->name('dashboard.index');
+        Route::get('/monitoring-izin', [MonitoringIzinController::class, 'index'])->name('monitoring-izin.index');
+    });
 });
 
 Route::middleware('auth')->group(function () {
@@ -60,4 +68,4 @@ Route::middleware('auth')->group(function () {
     Route::delete('/profile', [ProfileController::class, 'destroy'])->name('profile.destroy');
 });
 
-require __DIR__.'/auth.php';
+require __DIR__ . '/auth.php';
