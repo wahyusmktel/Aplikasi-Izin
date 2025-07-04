@@ -19,6 +19,7 @@ use App\Http\Controllers\Piket\MonitoringController as PiketMonitoringController
 use App\Http\Controllers\Kurikulum\MataPelajaranController;
 use App\Http\Controllers\Kurikulum\MasterGuruController;
 use App\Http\Controllers\Kurikulum\JadwalPelajaranController;
+use App\Http\Controllers\Kurikulum\DashboardController as KurikulumDashboardController;
 
 Route::get('/', function () {
     return view('welcome');
@@ -90,6 +91,7 @@ Route::middleware(['auth', 'verified'])->group(function () {
 
     // Grup Route untuk Kurikulum
     Route::middleware(['role:Kurikulum'])->prefix('kurikulum')->name('kurikulum.')->group(function () {
+        Route::get('/dashboard', [KurikulumDashboardController::class, 'index'])->name('dashboard.index');
         Route::resource('mata-pelajaran', MataPelajaranController::class);
         Route::post('master-guru/{master_guru}/generate-akun', [MasterGuruController::class, 'generateAkun'])->name('master-guru.generate-akun');
         Route::resource('master-guru', MasterGuruController::class);

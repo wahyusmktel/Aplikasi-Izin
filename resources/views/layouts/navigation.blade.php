@@ -93,6 +93,9 @@
                     <!-- Menu Dropdown Kurikulum -->
                     @role('Kurikulum')
                         <div class="hidden sm:flex sm:items-center sm:ms-6">
+                            <x-dropdown-link :href="route('kurikulum.dashboard.index')" :active="request()->routeIs('kurikulum.dashboard.*')">
+                                {{ __('Dashboard') }}
+                            </x-dropdown-link>
                             <x-dropdown align="right" width="48">
                                 <x-slot name="trigger">
                                     <button
