@@ -12,31 +12,43 @@ use Illuminate\Support\Facades\DB;
 
 class JadwalPelajaranController extends Controller
 {
-    // Menampilkan halaman pilihan rombel
+    // Method index() tidak berubah
     public function index()
     {
-        $rombels = Rombel::with('kelas', 'waliKelas')->where('tahun_ajaran', '2024/2025')->get(); // Ganti dengan tahun ajaran dinamis
+        $rombels = Rombel::with('kelas', 'waliKelas')->where('tahun_ajaran', '2024/2025')->get();
         return view('pages.kurikulum.jadwal-pelajaran.index', compact('rombels'));
     }
 
-    // Menampilkan grid jadwal untuk rombel yang dipilih
+    // Method show() dirombak total
     public function show(Rombel $rombel)
     {
         $days = ['Senin', 'Selasa', 'Rabu', 'Kamis', 'Jumat', 'Sabtu'];
-        $jamSlots = config('jadwal.jam_slots'); // Kita akan buat file config untuk ini
-        $mataPelajaran = MataPelajaran::orderBy('nama_mapel')->get();
+        $jamSlots = config('jadwal.jam_slots');
         $guru = MasterGuru::orderBy('nama_lengkap')->get();
 
+        // Ambil jadwal yang sudah ada untuk rombel ini
         $jadwal = JadwalPelajaran::where('rombel_id', $rombel->id)
-            ->get()
-            ->keyBy(function ($item) {
-                return $item->hari . '-' . $item->jam_ke;
-            });
+            ->get();
 
-        return view('pages.kurikulum.jadwal-pelajaran.show', compact('rombel', 'days', 'jamSlots', 'mataPelajaran', 'guru', 'jadwal'));
+        // Hitung jam yang sudah dialokasikan untuk setiap mapel
+        $jamTerpakai = $jadwal->groupBy('mata_pelajaran_id')->map->count();
+
+        // Siapkan data mata pelajaran dengan sisa jam
+        $mataPelajaran = MataPelajaran::orderBy('nama_mapel')->get()->map(function ($mapel) use ($jamTerpakai) {
+            $terpakai = $jamTerpakai->get($mapel->id, 0);
+            $mapel->sisa_jam = $mapel->jumlah_jam - $terpakai;
+            return $mapel;
+        });
+
+        // Ubah format jadwal agar mudah diakses oleh Alpine.js
+        $jadwalFormatted = $jadwal->keyBy(function ($item) {
+            return $item->hari . '-' . $item->jam_ke;
+        });
+
+        return view('pages.kurikulum.jadwal-pelajaran.show', compact('rombel', 'days', 'jamSlots', 'mataPelajaran', 'guru', 'jadwalFormatted'));
     }
 
-    // Menyimpan data jadwal dari grid
+    // Method store() dirombak untuk menerima format checkbox
     public function store(Request $request, Rombel $rombel)
     {
         $jadwalData = $request->input('jadwal', []);
@@ -47,9 +59,10 @@ class JadwalPelajaranController extends Controller
             // Hapus jadwal lama untuk rombel ini
             JadwalPelajaran::where('rombel_id', $rombel->id)->delete();
 
-            // Buat jadwal baru dari input
+            // Buat jadwal baru dari input checkbox
             foreach ($jadwalData as $hari => $jamKeList) {
                 foreach ($jamKeList as $jamKe => $data) {
+                    // Hanya proses jika checkbox ter-checklist (ada datanya)
                     if (!empty($data['mata_pelajaran_id']) && !empty($data['master_guru_id'])) {
                         $slot = $jamSlots[$jamKe];
                         JadwalPelajaran::create([
@@ -69,7 +82,7 @@ class JadwalPelajaranController extends Controller
             toast('Jadwal pelajaran berhasil disimpan.', 'success');
         } catch (\Exception $e) {
             DB::rollBack();
-            toast('Gagal menyimpan jadwal. ' . $e->getMessage(), 'error');
+            toast('Gagal menyimpan jadwal: ' . $e->getMessage(), 'error');
         }
 
         return redirect()->route('kurikulum.jadwal-pelajaran.show', $rombel->id);
