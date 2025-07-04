@@ -28,6 +28,7 @@ class JadwalPelajaranController extends Controller
 
         // Ambil jadwal yang sudah ada untuk rombel ini
         $jadwal = JadwalPelajaran::where('rombel_id', $rombel->id)
+            ->with(['mataPelajaran', 'guru']) // Eager load the relationships
             ->get();
 
         // Hitung jam yang sudah dialokasikan untuk setiap mapel

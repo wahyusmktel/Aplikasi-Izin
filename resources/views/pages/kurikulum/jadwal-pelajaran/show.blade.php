@@ -64,12 +64,13 @@
                                             </td>
                                             @foreach ($days as $day)
                                                 <td class="border p-1 align-top h-24 w-40"
-                                                    :class="getCellClass('{{ $day }}', {{ $jamKe }})">
+                                                    :class="getCellClass('{{ $day }}', {{ $jamKe }})"
+                                                    data-cell="{{ $day }}-{{ $jamKe }}">
                                                     <label
                                                         class="flex flex-col justify-center items-center h-full w-full cursor-pointer">
                                                         <input type="checkbox" class="rounded"
                                                             :disabled="isSlotDisabled('{{ $day }}', {{ $jamKe }})"
-                                                            @change="toggleSlot('{{ $day }}', {{ $jamKe }})">
+                                                            @change="toggleSlot('{{ $day }}', {{ $jamKe }}, $event)">
 
                                                         <div x-show="jadwal['{{ $day }}-{{ $jamKe }}']"
                                                             class="text-center mt-1">
@@ -81,13 +82,20 @@
                                                             </p>
                                                         </div>
 
-                                                        <!-- Hidden inputs for form submission -->
+                                                        <!-- ================================== -->
+                                                        <!--           BAGIAN PERBAIKAN         -->
+                                                        <!-- ================================== -->
                                                         <input type="hidden"
                                                             :name="'jadwal[{{ $day }}][{{ $jamKe }}][mata_pelajaran_id]'"
-                                                            :value="jadwal['{{ $day }}-{{ $jamKe }}']?.mapelId">
+                                                            :value="jadwal['{{ $day }}-{{ $jamKe }}']
+                                                                ?.mata_pelajaran_id">
                                                         <input type="hidden"
                                                             :name="'jadwal[{{ $day }}][{{ $jamKe }}][master_guru_id]'"
-                                                            :value="jadwal['{{ $day }}-{{ $jamKe }}']?.guruId">
+                                                            :value="jadwal['{{ $day }}-{{ $jamKe }}']
+                                                                ?.master_guru_id">
+                                                        <!-- ================================== -->
+                                                        <!--         BATAS PERBAIKAN            -->
+                                                        <!-- ================================== -->
                                                     </label>
                                                 </td>
                                             @endforeach
@@ -118,7 +126,7 @@
                     // Inisialisasi checkbox berdasarkan data jadwal yang ada
                     this.$nextTick(() => {
                         document.querySelectorAll('input[type=checkbox]').forEach(cb => {
-                            const [day, jamKe] = cb.closest('label').parentElement.dataset.cell.split('-');
+                            const [day, jamKe] = cb.closest('td').dataset.cell.split('-');
                             if (this.jadwal[`${day}-${jamKe}`]) {
                                 cb.checked = true;
                             }
@@ -132,16 +140,16 @@
                 },
 
                 isMapelInUse(mapelId) {
-                    return Object.values(this.jadwal).some(slot => slot && slot.mata_pelajaran_id === mapelId);
+                    return Object.values(this.jadwal).some(slot => slot && slot.mata_pelajaran_id == mapelId);
                 },
 
                 // Logika saat checkbox di-klik
-                toggleSlot(day, jamKe) {
+                toggleSlot(day, jamKe, event) {
                     const key = `${day}-${jamKe}`;
-                    const mapelInSlot = this.jadwal[key];
+                    const slotData = this.jadwal[key];
 
-                    if (mapelInSlot) { // Proses uncheck
-                        const mapelId = mapelInSlot.mata_pelajaran_id;
+                    if (slotData) { // Proses uncheck
+                        const mapelId = slotData.mata_pelajaran_id;
                         this.jadwal[key] = null;
                         this.getMapelById(mapelId).sisa_jam++;
                     } else { // Proses check
@@ -171,9 +179,9 @@
                 // Logika untuk men-disable checkbox
                 isSlotDisabled(day, jamKe) {
                     const key = `${day}-${jamKe}`;
-                    const mapelInSlot = this.jadwal[key];
+                    const slotData = this.jadwal[key];
 
-                    if (mapelInSlot) return false; // Selalu bisa di-uncheck
+                    if (slotData) return false; // Selalu bisa di-uncheck
                     if (!this.selectedMapelId) return true; // Disable jika belum pilih mapel
 
                     const selectedMapel = this.getMapelById(this.selectedMapelId);
@@ -182,10 +190,10 @@
 
                 // Helper untuk mendapatkan data
                 getMapelById(id) {
-                    return this.mataPelajaran.find(m => m.id === id);
+                    return this.mataPelajaran.find(m => m.id == id);
                 },
                 getGuruById(id) {
-                    return this.guru.find(g => g.id === id);
+                    return this.guru.find(g => g.id == id);
                 },
                 getMapelName(day, jamKe) {
                     return this.jadwal[`${day}-${jamKe}`]?.mapel?.nama_mapel || '';
