@@ -60,11 +60,13 @@ class User extends Authenticatable
     }
 
     // Relasi dari User ke data induk siswanya
-    public function masterSiswa() {
+    public function masterSiswa()
+    {
         return $this->hasOne(MasterSiswa::class);
     }
     // Relasi dari User (Wali Kelas) ke rombel yang diampunya
-    public function rombels() {
+    public function rombels()
+    {
         return $this->hasMany(Rombel::class, 'wali_kelas_id');
     }
 
@@ -75,5 +77,13 @@ class User extends Authenticatable
     public function perizinan()
     {
         return $this->hasMany(Perizinan::class);
+    }
+
+    /**
+     * Mendefinisikan relasi dari User ke Izin Meninggalkan Kelas.
+     */
+    public function izinMeninggalkanKelas()
+    {
+        return $this->hasMany(IzinMeninggalkanKelas::class);
     }
 }
