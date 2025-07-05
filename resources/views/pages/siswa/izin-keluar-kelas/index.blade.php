@@ -27,6 +27,8 @@
                                     </th>
                                     <th class="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase">Status
                                     </th>
+                                    <th class="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase">
+                                        Keterangan</th>
                                 </tr>
                             </thead>
                             <tbody class="bg-white divide-y divide-gray-200">
@@ -38,17 +40,25 @@
                                         </td>
                                         <td class="px-6 py-4 whitespace-nowrap">
                                             <span
-                                                class="px-2 inline-flex text-xs leading-5 font-semibold rounded-full
+                                                class="px-2 inline-flex text-xs leading-5 font-semibold rounded-full 
                                                 @if (in_array($izin->status, ['disetujui_guru_piket', 'diverifikasi_security', 'selesai'])) bg-green-100 text-green-800
                                                 @elseif($izin->status == 'ditolak') bg-red-100 text-red-800
                                                 @else bg-yellow-100 text-yellow-800 @endif">
                                                 {{ str_replace('_', ' ', Str::title($izin->status)) }}
                                             </span>
                                         </td>
+                                        <td class="px-6 py-4 whitespace-nowrap text-sm text-gray-500">
+                                            {{-- Tampilkan Alasan Penolakan jika ada --}}
+                                            @if ($izin->status == 'ditolak')
+                                                <span class="italic text-red-600">{{ $izin->alasan_penolakan }}</span>
+                                            @else
+                                                -
+                                            @endif
+                                        </td>
                                     </tr>
                                 @empty
                                     <tr>
-                                        <td colspan="3" class="px-6 py-4 text-center">Belum ada riwayat pengajuan.
+                                        <td colspan="4" class="px-6 py-4 text-center">Belum ada riwayat pengajuan.
                                         </td>
                                     </tr>
                                 @endforelse

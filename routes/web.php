@@ -23,6 +23,17 @@ use App\Http\Controllers\Kurikulum\DashboardController as KurikulumDashboardCont
 use App\Http\Controllers\GuruKelas\DashboardController as GuruKelasDashboardController;
 use App\Http\Controllers\Siswa\IzinMeninggalkanKelasController;
 use App\Http\Controllers\GuruKelas\PersetujuanIzinKeluarController;
+use App\Http\Controllers\Piket\PersetujuanIzinKeluarController as PiketPersetujuanIzinKeluarController;
+use App\Http\Controllers\VerifikasiController;
+use App\Http\Controllers\Security\VerifikasiController as SecurityVerifikasiController;
+
+// ==================================
+//     ROUTE PUBLIK UNTUK VERIFIKASI
+// ==================================
+Route::get('/verifikasi/surat/{uuid}', [VerifikasiController::class, 'show'])->name('verifikasi.surat');
+// ==================================
+//     BATAS ROUTE PUBLIK
+// ==================================
 
 Route::get('/', function () {
     return view('welcome');
@@ -94,6 +105,12 @@ Route::middleware(['auth', 'verified'])->group(function () {
     Route::middleware(['role:Guru Piket'])->prefix('piket')->name('piket.')->group(function () {
         Route::get('/dashboard', [PiketDashboardController::class, 'index'])->name('dashboard.index');
         Route::get('/monitoring-izin', [PiketMonitoringController::class, 'index'])->name('monitoring.index');
+
+        // Route untuk Persetujuan Izin Meninggalkan Kelas
+        Route::get('/persetujuan-izin-keluar', [PiketPersetujuanIzinKeluarController::class, 'index'])->name('persetujuan-izin-keluar.index');
+        Route::patch('/persetujuan-izin-keluar/{izin}/approve', [PiketPersetujuanIzinKeluarController::class, 'approve'])->name('persetujuan-izin-keluar.approve');
+        Route::patch('/persetujuan-izin-keluar/{izin}/reject', [PiketPersetujuanIzinKeluarController::class, 'reject'])->name('persetujuan-izin-keluar.reject');
+        Route::get('/persetujuan-izin-keluar/{izin}/print', [PiketPersetujuanIzinKeluarController::class, 'printPdf'])->name('persetujuan-izin-keluar.print');
     });
 
     // Grup Route untuk Kurikulum
@@ -115,6 +132,14 @@ Route::middleware(['auth', 'verified'])->group(function () {
         Route::get('/persetujuan-izin-keluar', [PersetujuanIzinKeluarController::class, 'index'])->name('persetujuan-izin-keluar.index');
         Route::patch('/persetujuan-izin-keluar/{izin}/approve', [PersetujuanIzinKeluarController::class, 'approve'])->name('persetujuan-izin-keluar.approve');
         Route::patch('/persetujuan-izin-keluar/{izin}/reject', [PersetujuanIzinKeluarController::class, 'reject'])->name('persetujuan-izin-keluar.reject');
+    });
+
+    // Grup Route untuk Security
+    Route::middleware(['role:Security'])->prefix('security')->name('security.')->group(function () {
+        Route::get('/verifikasi-izin', [SecurityVerifikasiController::class, 'index'])->name('verifikasi.index');
+        Route::patch('/verifikasi-izin/{izin}/keluar', [SecurityVerifikasiController::class, 'verifyKeluar'])->name('verifikasi.keluar');
+        Route::patch('/verifikasi-izin/{izin}/kembali', [SecurityVerifikasiController::class, 'verifyKembali'])->name('verifikasi.kembali');
+        Route::get('/verifikasi-izin/{izin}/print', [VerifikasiController::class, 'printPdf'])->name('verifikasi.print');
     });
 });
 
