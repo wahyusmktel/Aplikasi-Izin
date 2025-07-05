@@ -4,6 +4,7 @@ namespace App\Http\Controllers\Siswa;
 
 use App\Http\Controllers\Controller;
 use App\Models\IzinMeninggalkanKelas;
+use App\Models\JadwalPelajaran;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Auth;
 use Illuminate\Support\Facades\Log;
@@ -12,11 +13,28 @@ class IzinMeninggalkanKelasController extends Controller
 {
     public function index()
     {
-        $riwayatIzin = IzinMeninggalkanKelas::where('user_id', Auth::id())
+        $user = Auth::user();
+        $riwayatIzin = IzinMeninggalkanKelas::where('user_id', $user->id)
             ->latest()
             ->paginate(10);
 
-        return view('pages.siswa.izin-keluar-kelas.index', compact('riwayatIzin'));
+        // Cari jadwal yang sedang berlangsung untuk ditampilkan di form
+        $jadwalSaatIni = null;
+        $rombelAktif = $user->masterSiswa?->rombels()->where('tahun_ajaran', '2024/2025')->first();
+
+        if ($rombelAktif) {
+            $namaHariIni = $this->getNamaHari(now()->dayOfWeek);
+            $waktuSaatIni = now()->format('H:i:s');
+
+            $jadwalSaatIni = JadwalPelajaran::with(['mataPelajaran', 'guru'])
+                ->where('rombel_id', $rombelAktif->id)
+                ->where('hari', $namaHariIni)
+                ->where('jam_mulai', '<=', $waktuSaatIni)
+                ->where('jam_selesai', '>=', $waktuSaatIni)
+                ->first();
+        }
+
+        return view('pages.siswa.izin-keluar-kelas.index', compact('riwayatIzin', 'jadwalSaatIni'));
     }
 
     public function store(Request $request)
@@ -39,6 +57,7 @@ class IzinMeninggalkanKelasController extends Controller
             IzinMeninggalkanKelas::create([
                 'user_id' => $user->id,
                 'rombel_id' => $rombelAktif->id,
+                'jadwal_pelajaran_id' => $request->jadwal_pelajaran_id,
                 'tujuan' => $request->tujuan,
                 'keterangan' => $request->keterangan,
                 'estimasi_kembali' => now()->setTimeFromTimeString($request->estimasi_kembali),
@@ -52,5 +71,11 @@ class IzinMeninggalkanKelasController extends Controller
             toast('Gagal membuat pengajuan izin.', 'error');
             return back()->withInput();
         }
+    }
+
+    private function getNamaHari($dayOfWeek)
+    {
+        $hari = [0 => 'Minggu', 1 => 'Senin', 2 => 'Selasa', 3 => 'Rabu', 4 => 'Kamis', 5 => 'Jumat', 6 => 'Sabtu'];
+        return $hari[$dayOfWeek] ?? 'Tidak Diketahui';
     }
 }

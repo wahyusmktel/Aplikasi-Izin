@@ -16,6 +16,7 @@ class IzinMeninggalkanKelas extends Model
         'uuid',
         'user_id',
         'rombel_id',
+        'jadwal_pelajaran_id',
         'tujuan',
         'keterangan',
         'estimasi_kembali',
@@ -72,5 +73,11 @@ class IzinMeninggalkanKelas extends Model
     public function penolak()
     {
         return $this->belongsTo(User::class, 'ditolak_oleh');
+    }
+
+    // Relasi ke jadwal pelajaran saat izin dibuat
+    public function jadwalPelajaran()
+    {
+        return $this->belongsTo(JadwalPelajaran::class);
     }
 }

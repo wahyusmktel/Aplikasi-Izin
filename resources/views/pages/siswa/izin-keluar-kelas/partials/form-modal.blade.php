@@ -4,6 +4,21 @@
         <h2 class="text-lg font-medium text-gray-900">Form Izin Meninggalkan Kelas</h2>
         <p class="mt-1 text-sm text-gray-600">Isi detail tujuan Anda dan perkirakan kapan akan kembali ke kelas.</p>
 
+        @if ($jadwalSaatIni)
+            <div class="mt-4 p-3 bg-indigo-50 border border-indigo-200 rounded-md">
+                <p class="text-sm font-semibold text-indigo-800">Informasi Jam Pelajaran Saat Ini:</p>
+                <p class="text-sm text-gray-700"><strong>Mata Pelajaran:</strong>
+                    {{ $jadwalSaatIni->mataPelajaran->nama_mapel }}</p>
+                <p class="text-sm text-gray-700"><strong>Guru Pengajar:</strong> {{ $jadwalSaatIni->guru->nama_lengkap }}
+                </p>
+                <input type="hidden" name="jadwal_pelajaran_id" value="{{ $jadwalSaatIni->id }}">
+            </div>
+        @else
+            <div class="mt-4 p-3 bg-yellow-50 border border-yellow-200 rounded-md">
+                <p class="text-sm font-semibold text-yellow-800">Saat ini sedang tidak ada jam pelajaran.</p>
+            </div>
+        @endif
+
         <div class="mt-6">
             <x-input-label for="tujuan" value="Tujuan (Contoh: UKS, Perpustakaan, Ruang BK)" />
             <x-text-input id="tujuan" name="tujuan" type="text" class="mt-1 block w-full" :value="old('tujuan')"

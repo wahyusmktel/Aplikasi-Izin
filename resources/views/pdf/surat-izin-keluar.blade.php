@@ -84,6 +84,13 @@
                     <td>Tujuan</td>
                     <td>: {{ $izin->tujuan }}</td>
                 </tr>
+                @if ($izin->jadwalPelajaran)
+                    <tr>
+                        <td>Pada Jam Pelajaran</td>
+                        <td>: {{ $izin->jadwalPelajaran->mataPelajaran->nama_mapel }} (Guru:
+                            {{ $izin->jadwalPelajaran->guru->nama_lengkap }})</td>
+                    </tr>
+                @endif
                 <tr>
                     <td>Estimasi Kembali</td>
                     <td>: {{ \Carbon\Carbon::parse($izin->estimasi_kembali)->format('H:i') }} WIB</td>

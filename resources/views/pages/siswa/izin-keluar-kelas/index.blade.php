@@ -40,7 +40,7 @@
                                         </td>
                                         <td class="px-6 py-4 whitespace-nowrap">
                                             <span
-                                                class="px-2 inline-flex text-xs leading-5 font-semibold rounded-full 
+                                                class="px-2 inline-flex text-xs leading-5 font-semibold rounded-full
                                                 @if (in_array($izin->status, ['disetujui_guru_piket', 'diverifikasi_security', 'selesai'])) bg-green-100 text-green-800
                                                 @elseif($izin->status == 'ditolak') bg-red-100 text-red-800
                                                 @else bg-yellow-100 text-yellow-800 @endif">
@@ -71,5 +71,5 @@
         </div>
     </div>
 
-    @include('pages.siswa.izin-keluar-kelas.partials.form-modal')
+    @include('pages.siswa.izin-keluar-kelas.partials.form-modal', ['jadwalSaatIni' => $jadwalSaatIni])
 </x-app-layout>
