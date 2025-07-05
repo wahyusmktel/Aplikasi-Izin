@@ -6,6 +6,7 @@ use App\Http\Controllers\Controller;
 use App\Models\IzinMeninggalkanKelas;
 use App\Models\Perizinan;
 use App\Models\Rombel;
+use App\Models\User; // <-- Pastikan User model di-import
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Auth;
 use Illuminate\Support\Facades\DB;
@@ -46,7 +47,7 @@ class DashboardController extends Controller
         }
 
         // Data untuk Bar Chart Izin per Rombel
-        $tahunAjaranAktif = '2024/2025'; // Nanti ini bisa dibuat dinamis
+        $tahunAjaranAktif = '2024/2025';
         $rombelData = Rombel::where('tahun_ajaran', $tahunAjaranAktif)
             ->with('kelas')
             ->join('kelas', 'rombels.kelas_id', '=', 'kelas.id')
@@ -56,7 +57,7 @@ class DashboardController extends Controller
 
 
         // ==================================================
-        //      BAGIAN 2: DATA BARU (IZIN MENINGGALKAN KELAS - PERSONAL)
+        //      BAGIAN 2: DATA BARU (IZIN MENINGGALKAN KELAS)
         // ==================================================
 
         // Widget: Total Izin Diproses oleh Anda
@@ -85,6 +86,13 @@ class DashboardController extends Controller
             ->take(5)
             ->pluck('total', 'tujuan');
 
+        // Widget BARU: Top 10 Siswa Paling Sering Izin Keluar (Global)
+        $topSiswaIzinKeluar = User::role('Siswa')
+            ->withCount('izinMeninggalkanKelas')
+            ->orderBy('izin_meninggalkan_kelas_count', 'desc')
+            ->take(10)
+            ->get();
+
 
         // ==================================================
         //      BAGIAN 3: MENGIRIM SEMUA DATA KE VIEW
@@ -96,10 +104,11 @@ class DashboardController extends Controller
             'dailyChartData' => ['labels' => $dates->keys()->map(fn($date) => \Carbon\Carbon::parse($date)->format('d M')), 'data' => $dates->values()],
             'rombelChartData' => ['labels' => $rombelData->pluck('nama_kelas'), 'data' => $rombelData->pluck('total_izin')],
 
-            // Variabel baru untuk statistik personal Guru Piket
+            // Variabel baru untuk statistik Guru Piket
             'totalIzinDiprosesPiket' => $totalIzinDiprosesPiket,
             'dailyChartDataPiket' => ['labels' => $datesPiket->keys()->map(fn($date) => \Carbon\Carbon::parse($date)->format('d M')), 'data' => $datesPiket->values()],
             'tujuanChartDataPiket' => ['labels' => $tujuanChartPiket->keys(), 'data' => $tujuanChartPiket->values()],
+            'topSiswaIzinKeluar' => $topSiswaIzinKeluar, // <-- Variabel baru ditambahkan di sini
         ]);
     }
 }
