@@ -151,6 +151,9 @@
                             <x-nav-link :href="route('security.verifikasi.index')" :active="request()->routeIs('security.verifikasi.*')">
                                 {{ __('Verifikasi Gerbang') }}
                             </x-nav-link>
+                            <x-nav-link :href="route('security.verifikasi.scan')" :active="request()->routeIs('security.verifikasi.scan')">
+                                {{ __('Pindai QR') }}
+                            </x-nav-link>
                         </div>
                     @endrole
                 </div>

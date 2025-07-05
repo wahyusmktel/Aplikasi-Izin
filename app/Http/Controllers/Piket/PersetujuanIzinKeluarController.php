@@ -8,6 +8,7 @@ use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Auth;
 use Illuminate\Support\Facades\Log;
 use Barryvdh\DomPDF\Facade\Pdf; // Import PDF facade
+use SimpleSoftwareIO\QrCode\Facades\QrCode;
 
 class PersetujuanIzinKeluarController extends Controller
 {
@@ -57,21 +58,27 @@ class PersetujuanIzinKeluarController extends Controller
 
     public function printPdf(IzinMeninggalkanKelas $izin)
     {
-        // Pastikan hanya izin yang sudah disetujui piket atau lebih yang bisa dicetak
         if (!in_array($izin->status, ['disetujui_guru_piket', 'diverifikasi_security', 'selesai'])) {
             toast('Izin belum bisa dicetak.', 'error');
             return back();
         }
 
-        // Load relasi yang dibutuhkan untuk PDF
         $izin->load(['siswa.masterSiswa.rombels.kelas', 'guruKelasApprover', 'guruPiketApprover', 'securityVerifier']);
 
-        // Buat URL verifikasi untuk QR Code
-        $verificationUrl = route('verifikasi.surat', $izin->uuid);
+        // 1. URL untuk verifikasi publik
+        $publicUrl = route('verifikasi.surat', $izin->uuid);
+        $publicQrCode = QrCode::format('svg')->size(70)->generate($publicUrl);
+        $publicQrCodeBase64 = 'data:image/svg+xml;base64,' . base64_encode($publicQrCode);
+
+        // 2. URL untuk aksi internal security
+        $securityUrl = route('security.verifikasi.show-scan', $izin->uuid);
+        $securityQrCode = QrCode::format('svg')->size(70)->generate($securityUrl);
+        $securityQrCodeBase64 = 'data:image/svg+xml;base64,' . base64_encode($securityQrCode);
 
         $pdf = Pdf::loadView('pdf.surat-izin-keluar', [
             'izin' => $izin,
-            'verificationUrl' => $verificationUrl,
+            'publicQrCodeBase64' => $publicQrCodeBase64,
+            'securityQrCodeBase64' => $securityQrCodeBase64,
         ]);
 
         return $pdf->stream('surat-izin-' . $izin->siswa->name . '.pdf');

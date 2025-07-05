@@ -35,7 +35,7 @@
         }
 
         .signatures {
-            margin-top: 50px;
+            margin-top: 40px;
             width: 100%;
         }
 
@@ -43,11 +43,22 @@
             width: 30%;
             text-align: center;
             float: left;
-            margin: 0 1.5%;
+            margin: 0 1.6%;
         }
 
-        .qr-code {
-            float: right;
+        .qr-table {
+            width: 100%;
+            margin-top: 5px;
+        }
+
+        .qr-table td {
+            text-align: center;
+            vertical-align: bottom;
+        }
+
+        .qr-label {
+            font-size: 8px;
+            margin-top: 2px;
         }
     </style>
 </head>
@@ -79,7 +90,7 @@
                 </tr>
             </table>
             <p>Untuk meninggalkan lingkungan sekolah. Surat ini berlaku pada tanggal
-                {{ \Carbon\Carbon::parse($izin->created_at)->isoFormat('D MMMM YYYY') }}.</p>
+                {{ \Carbon\Carbon::parse($izin->created_at)->isoFormat('D MMMM<y_bin_564>') }}.</p>
         </div>
         <div class="signatures">
             <div class="signature-box">
@@ -97,10 +108,18 @@
             <div class="signature-box">
                 <p>Diverifikasi oleh,</p>
                 <p>Security</p>
-                <div class="qr-code">
-                    {!! QrCode::size(80)->generate($verificationUrl) !!}
-                </div>
-                <br><br><br>
+                <table class="qr-table">
+                    <tr>
+                        <td>
+                            <img src="{{ $securityQrCodeBase64 }}" alt="QR Code Petugas">
+                            <p class="qr-label">Pindai oleh Petugas</p>
+                        </td>
+                        <td>
+                            <img src="{{ $publicQrCodeBase64 }}" alt="QR Code Publik">
+                            <p class="qr-label">Verifikasi Publik</p>
+                        </td>
+                    </tr>
+                </table>
                 <p><strong>{{ $izin->securityVerifier->name ?? '(.........................)' }}</strong></p>
             </div>
         </div>

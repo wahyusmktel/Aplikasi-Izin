@@ -63,6 +63,8 @@
     </script>
     <!-- Chart.js -->
     <script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
+    <!-- Library untuk Scan QR Code -->
+    <script src="https://unpkg.com/html5-qrcode" type="text/javascript"></script>
     @include('sweetalert::alert')
     @stack('scripts')
 </body>

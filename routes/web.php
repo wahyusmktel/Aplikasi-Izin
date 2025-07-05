@@ -137,9 +137,11 @@ Route::middleware(['auth', 'verified'])->group(function () {
     // Grup Route untuk Security
     Route::middleware(['role:Security'])->prefix('security')->name('security.')->group(function () {
         Route::get('/verifikasi-izin', [SecurityVerifikasiController::class, 'index'])->name('verifikasi.index');
+        Route::get('/scan-qr', [SecurityVerifikasiController::class, 'scanQr'])->name('verifikasi.scan');
+        Route::get('/verifikasi-via-scan/{uuid}', [SecurityVerifikasiController::class, 'showScanResult'])->name('verifikasi.show-scan');
         Route::patch('/verifikasi-izin/{izin}/keluar', [SecurityVerifikasiController::class, 'verifyKeluar'])->name('verifikasi.keluar');
         Route::patch('/verifikasi-izin/{izin}/kembali', [SecurityVerifikasiController::class, 'verifyKembali'])->name('verifikasi.kembali');
-        Route::get('/verifikasi-izin/{izin}/print', [VerifikasiController::class, 'printPdf'])->name('verifikasi.print');
+        Route::get('/verifikasi-izin/{izin}/print', [SecurityVerifikasiController::class, 'printPdf'])->name('verifikasi.print');
     });
 });
 

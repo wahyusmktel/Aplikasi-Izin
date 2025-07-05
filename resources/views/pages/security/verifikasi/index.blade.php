@@ -37,27 +37,34 @@
                                             {{ $izin->waktu_keluar_sebenarnya ? \Carbon\Carbon::parse($izin->waktu_keluar_sebenarnya)->format('H:i') . ' WIB' : '-' }}
                                         </td>
                                         <td class="px-6 py-4 whitespace-nowrap text-right text-sm font-medium">
-                                            @if ($izin->status == 'disetujui_guru_piket')
-                                                <form action="{{ route('security.verifikasi.keluar', $izin->id) }}"
-                                                    method="POST">
-                                                    @csrf
-                                                    @method('PATCH')
-                                                    <button type="submit"
-                                                        class="inline-flex items-center px-4 py-2 bg-blue-600 border border-transparent rounded-md font-semibold text-xs text-white uppercase tracking-widest hover:bg-blue-500">
-                                                        Verifikasi Keluar
-                                                    </button>
-                                                </form>
-                                            @elseif ($izin->status == 'diverifikasi_security')
-                                                <form action="{{ route('security.verifikasi.kembali', $izin->id) }}"
-                                                    method="POST">
-                                                    @csrf
-                                                    @method('PATCH')
-                                                    <button type="submit"
-                                                        class="inline-flex items-center px-4 py-2 bg-green-600 border border-transparent rounded-md font-semibold text-xs text-white uppercase tracking-widest hover:bg-green-500">
-                                                        Siswa Kembali
-                                                    </button>
-                                                </form>
-                                            @endif
+                                            <div class="flex items-center justify-end space-x-2">
+                                                @if ($izin->status == 'disetujui_guru_piket')
+                                                    <form action="{{ route('security.verifikasi.keluar', $izin->id) }}"
+                                                        method="POST">
+                                                        @csrf
+                                                        @method('PATCH')
+                                                        <button type="submit"
+                                                            class="inline-flex items-center px-4 py-2 bg-blue-600 border border-transparent rounded-md font-semibold text-xs text-white uppercase tracking-widest hover:bg-blue-500">
+                                                            Verifikasi Keluar
+                                                        </button>
+                                                    </form>
+                                                @elseif ($izin->status == 'diverifikasi_security')
+                                                    <a href="{{ route('security.verifikasi.print', $izin->id) }}"
+                                                        target="_blank"
+                                                        class="inline-flex items-center px-3 py-1.5 border border-gray-300 text-xs font-medium rounded-md text-gray-700 bg-white hover:bg-gray-50">
+                                                        <i class="fa-solid fa-print mr-2"></i> Cetak Ulang
+                                                    </a>
+                                                    <form action="{{ route('security.verifikasi.kembali', $izin->id) }}"
+                                                        method="POST">
+                                                        @csrf
+                                                        @method('PATCH')
+                                                        <button type="submit"
+                                                            class="inline-flex items-center px-4 py-2 bg-green-600 border border-transparent rounded-md font-semibold text-xs text-white uppercase tracking-widest hover:bg-green-500">
+                                                            Siswa Kembali
+                                                        </button>
+                                                    </form>
+                                                @endif
+                                            </div>
                                         </td>
                                     </tr>
                                 @empty

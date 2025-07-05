@@ -8,6 +8,7 @@ use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Auth;
 use Illuminate\Support\Facades\Log;
 use Barryvdh\DomPDF\Facade\Pdf;
+use SimpleSoftwareIO\QrCode\Facades\QrCode;
 
 class VerifikasiController extends Controller
 {
@@ -72,23 +73,60 @@ class VerifikasiController extends Controller
      */
     public function printPdf(IzinMeninggalkanKelas $izin)
     {
-        // Pastikan hanya izin yang sudah diverifikasi atau lebih yang bisa dicetak ulang
         if (!in_array($izin->status, ['diverifikasi_security', 'selesai', 'terlambat'])) {
             toast('Surat izin ini belum bisa dicetak dari sisi security.', 'error');
             return back();
         }
 
-        // Load relasi yang dibutuhkan untuk PDF
         $izin->load(['siswa.masterSiswa.rombels.kelas', 'guruKelasApprover', 'guruPiketApprover', 'securityVerifier']);
 
-        // Buat URL verifikasi untuk QR Code
-        $verificationUrl = route('verifikasi.surat', $izin->uuid);
+        // 1. URL untuk verifikasi publik
+        $publicUrl = route('verifikasi.surat', $izin->uuid);
+        $publicQrCode = QrCode::format('svg')->size(70)->generate($publicUrl);
+        $publicQrCodeBase64 = 'data:image/svg+xml;base64,' . base64_encode($publicQrCode);
+
+        // 2. URL untuk aksi internal security
+        $securityUrl = route('security.verifikasi.show-scan', $izin->uuid);
+        $securityQrCode = QrCode::format('svg')->size(70)->generate($securityUrl);
+        $securityQrCodeBase64 = 'data:image/svg+xml;base64,' . base64_encode($securityQrCode);
 
         $pdf = Pdf::loadView('pdf.surat-izin-keluar', [
             'izin' => $izin,
-            'verificationUrl' => $verificationUrl,
+            'publicQrCodeBase64' => $publicQrCodeBase64,
+            'securityQrCodeBase64' => $securityQrCodeBase64,
         ]);
 
         return $pdf->stream('surat-izin-terverifikasi-' . $izin->siswa->name . '.pdf');
+    }
+
+    /**
+     * Menampilkan halaman untuk memindai QR Code.
+     */
+    public function scanQr()
+    {
+        return view('pages.security.verifikasi.scan');
+    }
+
+    /**
+     * Menampilkan halaman aksi setelah QR Code dipindai.
+     */
+    public function showScanResult(string $uuid)
+    {
+        $izin = IzinMeninggalkanKelas::with(['siswa.masterSiswa.rombels.kelas'])
+            ->where('uuid', $uuid)
+            ->first();
+
+        // Jika izin tidak ditemukan
+        if (!$izin) {
+            toast('Data izin tidak ditemukan atau tidak valid.', 'error');
+            return redirect()->route('security.verifikasi.scan');
+        }
+
+        // Jika izin sudah selesai atau ditolak
+        if (in_array($izin->status, ['selesai', 'terlambat', 'ditolak'])) {
+            toast('Status izin ini sudah final dan tidak memerlukan aksi.', 'info')->autoClose(5000);
+        }
+
+        return view('pages.security.verifikasi.show-scan-result', compact('izin'));
     }
 }
