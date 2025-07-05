@@ -21,6 +21,8 @@ use App\Http\Controllers\Kurikulum\MasterGuruController;
 use App\Http\Controllers\Kurikulum\JadwalPelajaranController;
 use App\Http\Controllers\Kurikulum\DashboardController as KurikulumDashboardController;
 use App\Http\Controllers\GuruKelas\DashboardController as GuruKelasDashboardController;
+use App\Http\Controllers\Siswa\IzinMeninggalkanKelasController;
+use App\Http\Controllers\GuruKelas\PersetujuanIzinKeluarController;
 
 Route::get('/', function () {
     return view('welcome');
@@ -76,6 +78,10 @@ Route::middleware(['auth', 'verified'])->group(function () {
     // Grup Route untuk Siswa
     Route::middleware(['role:Siswa'])->prefix('siswa')->name('siswa.')->group(function () {
         Route::get('/dashboard', [SiswaDashboardController::class, 'index'])->name('dashboard.index');
+
+        // Route untuk Izin Meninggalkan Kelas
+        Route::get('/izin-keluar-kelas', [IzinMeninggalkanKelasController::class, 'index'])->name('izin-keluar-kelas.index');
+        Route::post('/izin-keluar-kelas', [IzinMeninggalkanKelasController::class, 'store'])->name('izin-keluar-kelas.store');
     });
 
     // Grup Route untuk Guru BK
@@ -104,6 +110,11 @@ Route::middleware(['auth', 'verified'])->group(function () {
     // Grup Route untuk Guru Kelas
     Route::middleware(['role:Guru Kelas'])->prefix('guru-kelas')->name('guru-kelas.')->group(function () {
         Route::get('/dashboard', [GuruKelasDashboardController::class, 'index'])->name('dashboard.index');
+
+        // Route untuk Persetujuan Izin Meninggalkan Kelas
+        Route::get('/persetujuan-izin-keluar', [PersetujuanIzinKeluarController::class, 'index'])->name('persetujuan-izin-keluar.index');
+        Route::patch('/persetujuan-izin-keluar/{izin}/approve', [PersetujuanIzinKeluarController::class, 'approve'])->name('persetujuan-izin-keluar.approve');
+        Route::patch('/persetujuan-izin-keluar/{izin}/reject', [PersetujuanIzinKeluarController::class, 'reject'])->name('persetujuan-izin-keluar.reject');
     });
 });
 

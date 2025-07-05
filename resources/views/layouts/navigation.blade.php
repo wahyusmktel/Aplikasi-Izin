@@ -27,6 +27,9 @@
                         <x-nav-link :href="route('izin.index')" :active="request()->routeIs('izin.*')">
                             {{ __('Riwayat Izin') }}
                         </x-nav-link>
+                        <x-nav-link :href="route('siswa.izin-keluar-kelas.index')" :active="request()->routeIs('siswa.izin-keluar-kelas.*')">
+                            {{ __('Izin Keluar Kelas') }}
+                        </x-nav-link>
                     @endrole
                     @role('Wali Kelas')
                         <x-nav-link :href="route('wali-kelas.dashboard.index')" :active="request()->routeIs('wali-kelas.dashboard.*')">
@@ -131,6 +134,10 @@
                         <div class="hidden sm:space-x-8 sm:-my-px sm:ms-10 sm:flex">
                             <x-nav-link :href="route('guru-kelas.dashboard.index')" :active="request()->routeIs('guru-kelas.dashboard.*')">
                                 {{ __('Dashboard') }}
+                            </x-nav-link>
+
+                            <x-nav-link :href="route('guru-kelas.persetujuan-izin-keluar.index')" :active="request()->routeIs('guru-kelas.persetujuan-izin-keluar.*')">
+                                {{ __('Persetujuan Izin Keluar') }}
                             </x-nav-link>
                         </div>
                     @endrole
