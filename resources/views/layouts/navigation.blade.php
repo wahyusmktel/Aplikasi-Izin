@@ -94,6 +94,9 @@
                             <x-nav-link :href="route('piket.persetujuan-izin-keluar.index')" :active="request()->routeIs('piket.persetujuan-izin-keluar.*')">
                                 {{ __('Persetujuan Izin Keluar') }}
                             </x-nav-link>
+                            <x-nav-link :href="route('piket.persetujuan-izin-keluar.riwayat')" :active="request()->routeIs('piket.persetujuan-izin-keluar.riwayat')">
+                                {{ __('Riwayat Izin Keluar') }}
+                            </x-nav-link>
                         </div>
                     @endrole
                     <!-- Menu Dropdown Kurikulum -->
@@ -148,6 +151,9 @@
                     <!-- Menu Security -->
                     @role('Security')
                         <div class="hidden sm:space-x-8 sm:-my-px sm:ms-10 sm:flex">
+                            <x-nav-link :href="route('security.verifikasi.riwayat')" :active="request()->routeIs('security.verifikasi.riwayat')">
+                                {{ __('Riwayat Izin') }}
+                            </x-nav-link>
                             <x-nav-link :href="route('security.verifikasi.index')" :active="request()->routeIs('security.verifikasi.*')">
                                 {{ __('Verifikasi Gerbang') }}
                             </x-nav-link>

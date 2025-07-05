@@ -108,6 +108,7 @@ Route::middleware(['auth', 'verified'])->group(function () {
 
         // Route untuk Persetujuan Izin Meninggalkan Kelas
         Route::get('/persetujuan-izin-keluar', [PiketPersetujuanIzinKeluarController::class, 'index'])->name('persetujuan-izin-keluar.index');
+        Route::get('/riwayat-izin-keluar', [PiketPersetujuanIzinKeluarController::class, 'riwayat'])->name('persetujuan-izin-keluar.riwayat');
         Route::patch('/persetujuan-izin-keluar/{izin}/approve', [PiketPersetujuanIzinKeluarController::class, 'approve'])->name('persetujuan-izin-keluar.approve');
         Route::patch('/persetujuan-izin-keluar/{izin}/reject', [PiketPersetujuanIzinKeluarController::class, 'reject'])->name('persetujuan-izin-keluar.reject');
         Route::get('/persetujuan-izin-keluar/{izin}/print', [PiketPersetujuanIzinKeluarController::class, 'printPdf'])->name('persetujuan-izin-keluar.print');
@@ -137,6 +138,7 @@ Route::middleware(['auth', 'verified'])->group(function () {
     // Grup Route untuk Security
     Route::middleware(['role:Security'])->prefix('security')->name('security.')->group(function () {
         Route::get('/verifikasi-izin', [SecurityVerifikasiController::class, 'index'])->name('verifikasi.index');
+        Route::get('/riwayat-izin', [SecurityVerifikasiController::class, 'riwayat'])->name('verifikasi.riwayat');
         Route::get('/scan-qr', [SecurityVerifikasiController::class, 'scanQr'])->name('verifikasi.scan');
         Route::get('/verifikasi-via-scan/{uuid}', [SecurityVerifikasiController::class, 'showScanResult'])->name('verifikasi.show-scan');
 

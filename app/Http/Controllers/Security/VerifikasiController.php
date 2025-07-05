@@ -180,4 +180,30 @@ class VerifikasiController extends Controller
             return redirect()->route('security.verifikasi.scan');
         }
     }
+
+    /**
+     * Menampilkan halaman riwayat verifikasi.
+     */
+    public function riwayat(Request $request)
+    {
+        $query = IzinMeninggalkanKelas::with(['siswa.masterSiswa.rombels.kelas', 'securityVerifier'])
+            ->whereNotNull('security_verification_id'); // Hanya tampilkan yang pernah diverifikasi security
+
+        // Filter berdasarkan pencarian nama siswa
+        if ($request->filled('search')) {
+            $query->whereHas('siswa', function ($q) use ($request) {
+                $q->where('name', 'like', '%' . $request->search . '%');
+            });
+        }
+
+        // Filter berdasarkan rentang tanggal
+        if ($request->filled('start_date') && $request->filled('end_date')) {
+            $query->whereDate('security_verified_at', '>=', $request->start_date)
+                ->whereDate('security_verified_at', '<=', $request->end_date);
+        }
+
+        $riwayatIzin = $query->latest('security_verified_at')->paginate(20);
+
+        return view('pages.security.verifikasi.riwayat', compact('riwayatIzin'));
+    }
 }

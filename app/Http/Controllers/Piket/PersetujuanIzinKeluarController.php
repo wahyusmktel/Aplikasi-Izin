@@ -83,4 +83,30 @@ class PersetujuanIzinKeluarController extends Controller
 
         return $pdf->stream('surat-izin-' . $izin->siswa->name . '.pdf');
     }
+
+    /**
+     * Menampilkan halaman riwayat persetujuan izin keluar oleh piket.
+     */
+    public function riwayat(Request $request)
+    {
+        $query = IzinMeninggalkanKelas::with(['siswa.masterSiswa.rombels.kelas', 'guruPiketApprover'])
+            ->whereNotNull('guru_piket_approval_id'); // Hanya tampilkan yang pernah diproses piket
+
+        // Filter berdasarkan pencarian nama siswa
+        if ($request->filled('search')) {
+            $query->whereHas('siswa', function ($q) use ($request) {
+                $q->where('name', 'like', '%' . $request->search . '%');
+            });
+        }
+
+        // Filter berdasarkan rentang tanggal
+        if ($request->filled('start_date') && $request->filled('end_date')) {
+            $query->whereDate('guru_piket_approved_at', '>=', $request->start_date)
+                ->whereDate('guru_piket_approved_at', '<=', $request->end_date);
+        }
+
+        $riwayatIzin = $query->latest('guru_piket_approved_at')->paginate(20);
+
+        return view('pages.piket.persetujuan-izin-keluar.riwayat', compact('riwayatIzin'));
+    }
 }
