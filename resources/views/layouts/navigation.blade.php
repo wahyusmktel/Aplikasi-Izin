@@ -126,6 +126,14 @@
                             </x-dropdown>
                         </div>
                     @endrole
+                    <!-- Menu Guru Kelas -->
+                    @role('Guru Kelas')
+                        <div class="hidden sm:space-x-8 sm:-my-px sm:ms-10 sm:flex">
+                            <x-nav-link :href="route('guru-kelas.dashboard.index')" :active="request()->routeIs('guru-kelas.dashboard.*')">
+                                {{ __('Dashboard') }}
+                            </x-nav-link>
+                        </div>
+                    @endrole
                 </div>
             </div>
 

@@ -20,6 +20,7 @@ use App\Http\Controllers\Kurikulum\MataPelajaranController;
 use App\Http\Controllers\Kurikulum\MasterGuruController;
 use App\Http\Controllers\Kurikulum\JadwalPelajaranController;
 use App\Http\Controllers\Kurikulum\DashboardController as KurikulumDashboardController;
+use App\Http\Controllers\GuruKelas\DashboardController as GuruKelasDashboardController;
 
 Route::get('/', function () {
     return view('welcome');
@@ -98,6 +99,11 @@ Route::middleware(['auth', 'verified'])->group(function () {
         Route::get('jadwal-pelajaran', [JadwalPelajaranController::class, 'index'])->name('jadwal-pelajaran.index');
         Route::get('jadwal-pelajaran/{rombel}', [JadwalPelajaranController::class, 'show'])->name('jadwal-pelajaran.show');
         Route::post('jadwal-pelajaran/{rombel}', [JadwalPelajaranController::class, 'store'])->name('jadwal-pelajaran.store');
+    });
+
+    // Grup Route untuk Guru Kelas
+    Route::middleware(['role:Guru Kelas'])->prefix('guru-kelas')->name('guru-kelas.')->group(function () {
+        Route::get('/dashboard', [GuruKelasDashboardController::class, 'index'])->name('dashboard.index');
     });
 });
 
