@@ -65,13 +65,13 @@ class PersetujuanIzinKeluarController extends Controller
 
         $izin->load(['siswa.masterSiswa.rombels.kelas', 'guruKelasApprover', 'guruPiketApprover', 'securityVerifier']);
 
-        // 1. URL untuk verifikasi publik
+        // 1. URL untuk verifikasi publik (tetap sama)
         $publicUrl = route('verifikasi.surat', $izin->uuid);
         $publicQrCode = QrCode::format('svg')->size(70)->generate($publicUrl);
         $publicQrCodeBase64 = 'data:image/svg+xml;base64,' . base64_encode($publicQrCode);
 
-        // 2. URL untuk aksi internal security
-        $securityUrl = route('security.verifikasi.show-scan', $izin->uuid);
+        // 2. URL untuk aksi internal security (diubah ke route cerdas yang baru)
+        $securityUrl = route('security.verifikasi.process-scan', $izin->uuid); // <-- BARIS INI DIPERBARUI
         $securityQrCode = QrCode::format('svg')->size(70)->generate($securityUrl);
         $securityQrCodeBase64 = 'data:image/svg+xml;base64,' . base64_encode($securityQrCode);
 

@@ -90,7 +90,7 @@
                 </tr>
             </table>
             <p>Untuk meninggalkan lingkungan sekolah. Surat ini berlaku pada tanggal
-                {{ \Carbon\Carbon::parse($izin->created_at)->isoFormat('D MMMM<y_bin_564>') }}.</p>
+                {{ \Carbon\Carbon::parse($izin->created_at)->isoFormat('dddd, D MMMM Y') }}.</p>
         </div>
         <div class="signatures">
             <div class="signature-box">

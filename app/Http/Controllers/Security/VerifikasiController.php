@@ -129,4 +129,55 @@ class VerifikasiController extends Controller
 
         return view('pages.security.verifikasi.show-scan-result', compact('izin'));
     }
+
+    /**
+     * Memproses aksi berdasarkan status izin saat ini via scan QR.
+     */
+    public function processScanAction(string $uuid)
+    {
+        $izin = IzinMeninggalkanKelas::where('uuid', $uuid)->first();
+
+        if (!$izin) {
+            toast('Data izin tidak ditemukan.', 'error');
+            return redirect()->route('security.verifikasi.scan');
+        }
+
+        try {
+            // KONDISI 1: Jika izin siap untuk diverifikasi KELUAR
+            if ($izin->status === 'disetujui_guru_piket') {
+                $izin->update([
+                    'status' => 'diverifikasi_security',
+                    'security_verification_id' => Auth::id(),
+                    'security_verified_at' => now(),
+                    'waktu_keluar_sebenarnya' => now(),
+                ]);
+
+                toast('Verifikasi KELUAR berhasil! Mencetak surat izin...', 'success')->autoClose(4000);
+                return redirect()->route('security.verifikasi.print', $izin->id);
+            }
+            // KONDISI 2: Jika izin siap untuk diverifikasi KEMBALI
+            elseif ($izin->status === 'diverifikasi_security') {
+                $waktuKembali = now();
+                $estimasiKembali = \Carbon\Carbon::parse($izin->estimasi_kembali);
+                $statusAkhir = $waktuKembali->gt($estimasiKembali) ? 'terlambat' : 'selesai';
+
+                $izin->update([
+                    'status' => $statusAkhir,
+                    'waktu_kembali_sebenarnya' => $waktuKembali,
+                ]);
+
+                toast('Verifikasi KEMBALI berhasil dicatat.', 'success');
+                return redirect()->route('security.verifikasi.index');
+            }
+            // KONDISI 3: Jika status sudah final atau lainnya
+            else {
+                toast('Status izin ini sudah final. Menampilkan detail...', 'info')->autoClose(5000);
+                return redirect()->route('security.verifikasi.show-scan', $izin->uuid);
+            }
+        } catch (\Exception $e) {
+            Log::error('Error processing scan action by security: ' . $e->getMessage());
+            toast('Gagal memproses aksi otomatis.', 'error');
+            return redirect()->route('security.verifikasi.scan');
+        }
+    }
 }

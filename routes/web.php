@@ -139,6 +139,11 @@ Route::middleware(['auth', 'verified'])->group(function () {
         Route::get('/verifikasi-izin', [SecurityVerifikasiController::class, 'index'])->name('verifikasi.index');
         Route::get('/scan-qr', [SecurityVerifikasiController::class, 'scanQr'])->name('verifikasi.scan');
         Route::get('/verifikasi-via-scan/{uuid}', [SecurityVerifikasiController::class, 'showScanResult'])->name('verifikasi.show-scan');
+
+        // Route baru untuk aksi verifikasi keluar & cetak otomatis
+        Route::get('/verifikasi-via-scan/{uuid}', [SecurityVerifikasiController::class, 'showScanResult'])->name('verifikasi.show-scan');
+        Route::get('/verifikasi-via-scan/{uuid}/process', [SecurityVerifikasiController::class, 'processScanAction'])->name('verifikasi.process-scan');
+
         Route::patch('/verifikasi-izin/{izin}/keluar', [SecurityVerifikasiController::class, 'verifyKeluar'])->name('verifikasi.keluar');
         Route::patch('/verifikasi-izin/{izin}/kembali', [SecurityVerifikasiController::class, 'verifyKembali'])->name('verifikasi.kembali');
         Route::get('/verifikasi-izin/{izin}/print', [SecurityVerifikasiController::class, 'printPdf'])->name('verifikasi.print');
