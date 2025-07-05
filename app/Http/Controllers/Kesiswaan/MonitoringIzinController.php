@@ -5,6 +5,7 @@ namespace App\Http\Controllers\Kesiswaan;
 use App\Http\Controllers\Controller;
 use App\Models\Kelas;
 use App\Models\Perizinan;
+use App\Models\IzinMeninggalkanKelas;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Log;
 
@@ -48,6 +49,43 @@ class MonitoringIzinController extends Controller
         } catch (\Exception $e) {
             Log::error('Error fetching all permissions for Kesiswaan: ' . $e->getMessage());
             toast('Gagal memuat data monitoring perizinan.', 'error');
+            return redirect()->back();
+        }
+    }
+
+    /**
+     * Menampilkan halaman riwayat Izin Meninggalkan Kelas untuk Kesiswaan.
+     */
+    public function riwayatIzinKeluar(Request $request)
+    {
+        try {
+            $query = IzinMeninggalkanKelas::with([
+                'siswa.masterSiswa.rombels.kelas',
+                'guruKelasApprover',
+                'guruPiketApprover',
+                'securityVerifier',
+                'penolak'
+            ]);
+
+            // Filter berdasarkan pencarian nama siswa
+            if ($request->filled('search')) {
+                $query->whereHas('siswa', function ($q) use ($request) {
+                    $q->where('name', 'like', '%' . $request->search . '%');
+                });
+            }
+
+            // Filter berdasarkan rentang tanggal pengajuan
+            if ($request->filled('start_date') && $request->filled('end_date')) {
+                $query->whereDate('created_at', '>=', $request->start_date)
+                    ->whereDate('created_at', '<=', $request->end_date);
+            }
+
+            $riwayatIzin = $query->latest()->paginate(15)->withQueryString();
+
+            return view('pages.kesiswaan.riwayat-izin-keluar.index', compact('riwayatIzin'));
+        } catch (\Exception $e) {
+            Log::error('Error fetching leave permit history for Kesiswaan: ' . $e->getMessage());
+            toast('Gagal memuat data riwayat.', 'error');
             return redirect()->back();
         }
     }

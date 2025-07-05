@@ -84,6 +84,7 @@ Route::middleware(['auth', 'verified'])->group(function () {
     Route::middleware(['role:Waka Kesiswaan'])->prefix('kesiswaan')->name('kesiswaan.')->group(function () {
         Route::get('/dashboard', [DashboardController::class, 'index'])->name('dashboard.index');
         Route::get('/monitoring-izin', [MonitoringIzinController::class, 'index'])->name('monitoring-izin.index');
+        Route::get('/riwayat-izin-keluar', [MonitoringIzinController::class, 'riwayatIzinKeluar'])->name('riwayat-izin-keluar.index');
     });
 
     // Grup Route untuk Siswa

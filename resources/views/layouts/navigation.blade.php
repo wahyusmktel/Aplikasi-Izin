@@ -71,6 +71,9 @@
                         <x-nav-link :href="route('kesiswaan.monitoring-izin.index')" :active="request()->routeIs('kesiswaan.monitoring-izin.*')">
                             {{ __('Monitoring Izin') }}
                         </x-nav-link>
+                        <x-nav-link :href="route('kesiswaan.riwayat-izin-keluar.index')" :active="request()->routeIs('kesiswaan.riwayat-izin-keluar.*')">
+                            {{ __('Izin Keluar Kelas') }}
+                        </x-nav-link>
                     @endrole
                     <!-- Menu Guru BK -->
                     @role('Guru BK')
