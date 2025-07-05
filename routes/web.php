@@ -26,6 +26,7 @@ use App\Http\Controllers\GuruKelas\PersetujuanIzinKeluarController;
 use App\Http\Controllers\Piket\PersetujuanIzinKeluarController as PiketPersetujuanIzinKeluarController;
 use App\Http\Controllers\VerifikasiController;
 use App\Http\Controllers\Security\VerifikasiController as SecurityVerifikasiController;
+use App\Http\Controllers\Kurikulum\JamPelajaranController;
 
 // ==================================
 //     ROUTE PUBLIK UNTUK VERIFIKASI
@@ -124,6 +125,9 @@ Route::middleware(['auth', 'verified'])->group(function () {
         Route::get('jadwal-pelajaran', [JadwalPelajaranController::class, 'index'])->name('jadwal-pelajaran.index');
         Route::get('jadwal-pelajaran/{rombel}', [JadwalPelajaranController::class, 'show'])->name('jadwal-pelajaran.show');
         Route::post('jadwal-pelajaran/{rombel}', [JadwalPelajaranController::class, 'store'])->name('jadwal-pelajaran.store');
+
+        //Route untuk Jam Pelajaran
+        Route::resource('jam-pelajaran', JamPelajaranController::class);
     });
 
     // Grup Route untuk Guru Kelas

@@ -10,7 +10,6 @@
             <form action="{{ route('kurikulum.jadwal-pelajaran.store', $rombel->id) }}" method="POST">
                 @csrf
 
-                <!-- Panel Kontrol (Brush) -->
                 <div class="bg-white p-4 rounded-lg shadow-md mb-6">
                     <h3 class="font-semibold text-lg mb-2">Pengaturan Jadwal</h3>
                     <div class="grid grid-cols-1 md:grid-cols-3 gap-4">
@@ -42,7 +41,6 @@
                     </div>
                 </div>
 
-                <!-- Grid Jadwal -->
                 <div class="bg-white overflow-hidden shadow-sm sm:rounded-lg">
                     <div class="p-6 text-gray-900">
                         <div class="overflow-x-auto">
@@ -56,39 +54,43 @@
                                     </tr>
                                 </thead>
                                 <tbody>
-                                    @foreach ($jamSlots as $jamKe => $slot)
+                                    @foreach ($jamSlots as $slot)
                                         <tr>
                                             <td class="border p-2 text-center text-sm">
-                                                <span class="font-bold">Jam Ke-{{ $jamKe }}</span><br>
-                                                <span>{{ $slot['mulai'] }} - {{ $slot['selesai'] }}</span>
+                                                <span class="font-bold">Jam Ke-{{ $slot->jam_ke }}</span><br>
+                                                <span>{{ \Carbon\Carbon::parse($slot->jam_mulai)->format('H:i') }} -
+                                                    {{ \Carbon\Carbon::parse($slot->jam_selesai)->format('H:i') }}</span>
                                             </td>
                                             @foreach ($days as $day)
+                                                @php
+                                                    $currentJadwal = $jadwalFormatted->get($day . '-' . $slot->jam_ke);
+                                                @endphp
                                                 <td class="border p-1 align-top h-24 w-40"
-                                                    :class="getCellClass('{{ $day }}', {{ $jamKe }})"
-                                                    data-cell="{{ $day }}-{{ $jamKe }}">
+                                                    :class="getCellClass('{{ $day }}', {{ $slot->jam_ke }})"
+                                                    data-cell="{{ $day }}-{{ $slot->jam_ke }}">
                                                     <label
                                                         class="flex flex-col justify-center items-center h-full w-full cursor-pointer">
                                                         <input type="checkbox" class="rounded"
-                                                            :disabled="isSlotDisabled('{{ $day }}', {{ $jamKe }})"
-                                                            @change="toggleSlot('{{ $day }}', {{ $jamKe }}, $event)">
+                                                            :disabled="isSlotDisabled('{{ $day }}', {{ $slot->jam_ke }})"
+                                                            @change="toggleSlot('{{ $day }}', {{ $slot->jam_ke }}, $event)">
 
-                                                        <div x-show="jadwal['{{ $day }}-{{ $jamKe }}']"
+                                                        <div x-show="jadwal['{{ $day }}-{{ $slot->jam_ke }}']"
                                                             class="text-center mt-1">
                                                             <p class="text-xs font-bold"
-                                                                x-text="getMapelName('{{ $day }}', {{ $jamKe }})">
+                                                                x-text="getMapelName('{{ $day }}', {{ $slot->jam_ke }})">
                                                             </p>
                                                             <p class="text-xs"
-                                                                x-text="getGuruName('{{ $day }}', {{ $jamKe }})">
+                                                                x-text="getGuruName('{{ $day }}', {{ $slot->jam_ke }})">
                                                             </p>
                                                         </div>
 
                                                         <input type="hidden"
-                                                            :name="'jadwal[{{ $day }}][{{ $jamKe }}][mata_pelajaran_id]'"
-                                                            :value="jadwal['{{ $day }}-{{ $jamKe }}']
+                                                            :name="'jadwal[{{ $day }}][{{ $slot->jam_ke }}][mata_pelajaran_id]'"
+                                                            :value="jadwal['{{ $day }}-{{ $slot->jam_ke }}']
                                                                 ?.mata_pelajaran_id">
                                                         <input type="hidden"
-                                                            :name="'jadwal[{{ $day }}][{{ $jamKe }}][master_guru_id]'"
-                                                            :value="jadwal['{{ $day }}-{{ $jamKe }}']
+                                                            :name="'jadwal[{{ $day }}][{{ $slot->jam_ke }}][master_guru_id]'"
+                                                            :value="jadwal['{{ $day }}-{{ $slot->jam_ke }}']
                                                                 ?.master_guru_id">
                                                     </label>
                                                 </td>
@@ -111,6 +113,7 @@
                 mataPelajaran: @json($mataPelajaran),
                 guru: @json($guru),
                 jadwal: @json($jadwalFormatted),
+                jamSlots: @json($jamSlots), // <-- Ambil juga jamSlots ke JS
 
                 // State
                 selectedMapelId: '',
@@ -128,28 +131,21 @@
                     });
                 },
 
-                // ==================================
-                //           BAGIAN PERBAIKAN
-                // ==================================
                 // Computed property untuk mapel yang tersedia di dropdown
                 get availableMapel() {
-                    // Hanya tampilkan mapel yang sisa jamnya lebih dari 0
                     return this.mataPelajaran.filter(mapel => mapel.sisa_jam > 0);
                 },
-                // ==================================
-                //         BATAS PERBAIKAN
-                // ==================================
 
                 // Logika saat checkbox di-klik
                 toggleSlot(day, jamKe, event) {
                     const key = `${day}-${jamKe}`;
                     const slotData = this.jadwal[key];
 
-                    if (slotData) { // Proses uncheck
+                    if (slotData) {
                         const mapelId = slotData.mata_pelajaran_id;
                         this.jadwal[key] = null;
                         this.getMapelById(mapelId).sisa_jam++;
-                    } else { // Proses check
+                    } else {
                         if (!this.selectedMapelId || !this.selectedGuruId) {
                             alert('Pilih Mata Pelajaran dan Guru terlebih dahulu!');
                             event.target.checked = false;
@@ -176,10 +172,8 @@
                 isSlotDisabled(day, jamKe) {
                     const key = `${day}-${jamKe}`;
                     const slotData = this.jadwal[key];
-
-                    if (slotData) return false; // Selalu bisa di-uncheck
-                    if (!this.selectedMapelId) return true; // Disable jika belum pilih mapel
-
+                    if (slotData) return false;
+                    if (!this.selectedMapelId) return true;
                     const selectedMapel = this.getMapelById(this.selectedMapelId);
                     return selectedMapel.sisa_jam <= 0;
                 },

@@ -78,7 +78,7 @@ class VerifikasiController extends Controller
             return back();
         }
 
-        $izin->load(['siswa.masterSiswa.rombels.kelas', 'guruKelasApprover', 'guruPiketApprover', 'securityVerifier']);
+        $izin->load(['siswa.masterSiswa.rombels.kelas', 'guruKelasApprover', 'guruPiketApprover', 'securityVerifier', 'jadwalPelajaran.mataPelajaran', 'jadwalPelajaran.guru']);
 
         // 1. URL untuk verifikasi publik
         $publicUrl = route('verifikasi.surat', $izin->uuid);

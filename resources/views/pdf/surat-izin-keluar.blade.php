@@ -87,8 +87,8 @@
                 @if ($izin->jadwalPelajaran)
                     <tr>
                         <td>Pada Jam Pelajaran</td>
-                        <td>: {{ $izin->jadwalPelajaran->mataPelajaran->nama_mapel }} (Guru:
-                            {{ $izin->jadwalPelajaran->guru->nama_lengkap }})</td>
+                        <td>: {{ $izin->jadwalPelajaran?->mataPelajaran?->nama_mapel }} (Guru:
+                            {{ $izin->jadwalPelajaran?->guru?->nama_lengkap }})</td>
                     </tr>
                 @endif
                 <tr>

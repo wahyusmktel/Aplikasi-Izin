@@ -125,6 +125,9 @@
                                 </x-slot>
 
                                 <x-slot name="content">
+                                    <x-dropdown-link :href="route('kurikulum.jam-pelajaran.index')" :active="request()->routeIs('kurikulum.jam-pelajaran.*')">
+                                        {{ __('Pengaturan Jam') }}
+                                    </x-dropdown-link>
                                     <x-dropdown-link :href="route('kurikulum.mata-pelajaran.index')" :active="request()->routeIs('kurikulum.mata-pelajaran.*')">
                                         {{ __('Mata Pelajaran') }}
                                     </x-dropdown-link>
