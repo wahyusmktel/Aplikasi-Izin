@@ -86,8 +86,29 @@ class DashboardController extends Controller
             ->take(5)
             ->pluck('total', 'tujuan');
 
-        // Widget BARU: Top 10 Siswa Paling Sering Izin Keluar (Global)
-        $topSiswaIzinKeluar = User::role('Siswa')
+        // ==================================================
+        //      PERBAIKAN QUERY TOP 10 SISWA
+        // ==================================================
+        // Widget Top 10 Siswa (Personal - yang Anda proses)
+        $topSiswaPersonalData = IzinMeninggalkanKelas::select('user_id', DB::raw('count(*) as total_izin'))
+            ->where('guru_piket_approval_id', $piketUserId)
+            ->groupBy('user_id')
+            ->orderBy('total_izin', 'desc')
+            ->take(10)
+            ->get();
+        $topSiswaPersonalIds = $topSiswaPersonalData->pluck('user_id');
+        $topSiswaPersonalUsers = User::whereIn('id', $topSiswaPersonalIds)->get()->keyBy('id');
+        $topSiswaIzinKeluarPersonal = $topSiswaPersonalData->map(function ($item) use ($topSiswaPersonalUsers) {
+            $user = $topSiswaPersonalUsers->get($item->user_id);
+            if ($user) {
+                $user->izin_meninggalkan_kelas_count = $item->total_izin;
+                return $user;
+            }
+            return null;
+        })->filter();
+
+        // Widget BARU: Top 10 Siswa (Global)
+        $topSiswaIzinKeluarGlobal = User::role('Siswa')
             ->withCount('izinMeninggalkanKelas')
             ->orderBy('izin_meninggalkan_kelas_count', 'desc')
             ->take(10)
@@ -98,17 +119,18 @@ class DashboardController extends Controller
         //      BAGIAN 3: MENGIRIM SEMUA DATA KE VIEW
         // ==================================================
         return view('pages.piket.dashboard.index', [
-            // Variabel dari kode lama Anda
+            // Variabel dari statistik umum
             'izinHariIni' => $izinHariIni,
             'statusChartData' => ['labels' => $statusData->keys(), 'data' => $statusData->values()],
             'dailyChartData' => ['labels' => $dates->keys()->map(fn($date) => \Carbon\Carbon::parse($date)->format('d M')), 'data' => $dates->values()],
             'rombelChartData' => ['labels' => $rombelData->pluck('nama_kelas'), 'data' => $rombelData->pluck('total_izin')],
 
-            // Variabel baru untuk statistik Guru Piket
+            // Variabel untuk statistik personal & global Guru Piket
             'totalIzinDiprosesPiket' => $totalIzinDiprosesPiket,
             'dailyChartDataPiket' => ['labels' => $datesPiket->keys()->map(fn($date) => \Carbon\Carbon::parse($date)->format('d M')), 'data' => $datesPiket->values()],
             'tujuanChartDataPiket' => ['labels' => $tujuanChartPiket->keys(), 'data' => $tujuanChartPiket->values()],
-            'topSiswaIzinKeluar' => $topSiswaIzinKeluar, // <-- Variabel baru ditambahkan di sini
+            'topSiswaIzinKeluarPersonal' => $topSiswaIzinKeluarPersonal,
+            'topSiswaIzinKeluarGlobal' => $topSiswaIzinKeluarGlobal, // <-- Variabel baru ditambahkan
         ]);
     }
 }

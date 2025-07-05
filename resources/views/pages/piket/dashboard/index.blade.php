@@ -60,13 +60,17 @@
                 </div>
             </div>
 
+            <!-- ================================================== -->
+            <!--   BAGIAN 2: STATISTIK IZIN KELUAR KELAS   -->
+            <!-- ================================================== -->
             <h3 class="text-lg font-semibold text-gray-700 mb-4 mt-12 pt-4 border-t">Statistik Izin Meninggalkan Kelas
             </h3>
-            <div class="grid grid-cols-1 lg:grid-cols-3 gap-6">
-                <div class="lg:col-span-1 bg-white p-6 rounded-lg shadow">
-                    <h3 class="font-semibold mb-4">Top 10 Siswa Sering Izin Keluar</h3>
+            <div class="grid grid-cols-1 lg:grid-cols-2 gap-6">
+                <!-- Widget Top 10 Siswa (GLOBAL) -->
+                <div class="bg-white p-6 rounded-lg shadow">
+                    <h3 class="font-semibold mb-4">Top 10 Siswa Izin Keluar (Global)</h3>
                     <div class="space-y-3 max-h-80 overflow-y-auto">
-                        @forelse ($topSiswaIzinKeluar as $siswa)
+                        @forelse ($topSiswaIzinKeluarGlobal as $siswa)
                             <div class="flex justify-between items-center text-sm">
                                 <span>{{ $loop->iteration }}. {{ $siswa->name }}</span>
                                 <span class="font-bold text-gray-700">{{ $siswa->izin_meninggalkan_kelas_count }}
@@ -78,23 +82,42 @@
                     </div>
                 </div>
 
+                <!-- Widget Top 10 Siswa (PERSONAL) -->
+                <div class="bg-white p-6 rounded-lg shadow">
+                    <h3 class="font-semibold mb-4">Top 10 Siswa (Anda Proses)</h3>
+                    <div class="space-y-3 max-h-80 overflow-y-auto">
+                        @forelse ($topSiswaIzinKeluarPersonal as $siswa)
+                            <div class="flex justify-between items-center text-sm">
+                                <span>{{ $loop->iteration }}. {{ $siswa->name }}</span>
+                                <span class="font-bold text-gray-700">{{ $siswa->izin_meninggalkan_kelas_count }}
+                                    kali</span>
+                            </div>
+                        @empty
+                            <p class="text-sm text-gray-500">Belum ada data.</p>
+                        @endforelse
+                    </div>
+                </div>
+            </div>
+
+            <div class="grid grid-cols-1 lg:grid-cols-3 gap-6 mt-6">
                 <div
                     class="lg:col-span-1 bg-indigo-500 text-white p-6 rounded-lg shadow-lg flex flex-col justify-center">
                     <h4 class="text-lg font-semibold">Total Izin Anda Proses</h4>
                     <p class="text-4xl font-bold mt-2">{{ $totalIzinDiprosesPiket }}</p>
                     <p class="text-sm opacity-80">Sepanjang waktu</p>
                 </div>
-
-                <div class="lg:col-span-1 bg-white p-6 rounded-lg shadow">
-                    <h3 class="font-semibold mb-4">Top 5 Tujuan Izin (Anda)</h3>
-                    <canvas id="tujuanIzinPribadiChart"></canvas>
-                </div>
-
-                <div class="lg:col-span-3 bg-white overflow-hidden shadow-sm sm:rounded-lg mt-6">
+                <div class="lg:col-span-2 bg-white overflow-hidden shadow-sm sm:rounded-lg">
                     <div class="p-6 text-gray-900">
-                        <h3 class="font-semibold text-lg mb-4">Tren Izin yang Anda Proses (30 Hari Terakhir)</h3>
-                        <canvas id="trenIzinPribadiChart"></canvas>
+                        <h3 class="font-semibold text-lg mb-4">Top 5 Tujuan Izin yang Anda Setujui</h3>
+                        <canvas id="tujuanIzinPribadiChart"></canvas>
                     </div>
+                </div>
+            </div>
+
+            <div class="bg-white overflow-hidden shadow-sm sm:rounded-lg mt-6">
+                <div class="p-6 text-gray-900">
+                    <h3 class="font-semibold text-lg mb-4">Tren Izin yang Anda Proses (30 Hari Terakhir)</h3>
+                    <canvas id="trenIzinPribadiChart"></canvas>
                 </div>
             </div>
 
