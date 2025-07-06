@@ -27,6 +27,11 @@ use App\Http\Controllers\Piket\PersetujuanIzinKeluarController as PiketPersetuju
 use App\Http\Controllers\VerifikasiController;
 use App\Http\Controllers\Security\VerifikasiController as SecurityVerifikasiController;
 use App\Http\Controllers\Kurikulum\JamPelajaranController;
+use App\Http\Controllers\Piket\PenangananTerlambatController;
+use App\Http\Controllers\Security\PendataanTerlambatController;
+use App\Http\Controllers\Piket\VerifikasiTerlambatController;
+use App\Http\Controllers\PublicVerifikasiController;
+use App\Http\Controllers\GuruKelas\VerifikasiTerlambatController as GuruKelasVerifikasiTerlambatController;
 
 // ==================================
 //     ROUTE PUBLIK UNTUK VERIFIKASI
@@ -35,6 +40,12 @@ Route::get('/verifikasi/surat/{uuid}', [VerifikasiController::class, 'show'])->n
 // ==================================
 //     BATAS ROUTE PUBLIK
 // ==================================
+
+// ==================================================
+//      ROUTE UNTUK HALAMAN VERIFIKASI PUBLIK
+// ==================================================
+Route::get('/verifikasi/surat-terlambat/{uuid}', [PublicVerifikasiController::class, 'showSuratTerlambat'])
+    ->name('verifikasi.surat-terlambat');
 
 Route::get('/', function () {
     return view('welcome');
@@ -114,6 +125,16 @@ Route::middleware(['auth', 'verified'])->group(function () {
         Route::patch('/persetujuan-izin-keluar/{izin}/approve', [PiketPersetujuanIzinKeluarController::class, 'approve'])->name('persetujuan-izin-keluar.approve');
         Route::patch('/persetujuan-izin-keluar/{izin}/reject', [PiketPersetujuanIzinKeluarController::class, 'reject'])->name('persetujuan-izin-keluar.reject');
         Route::get('/persetujuan-izin-keluar/{izin}/print', [PiketPersetujuanIzinKeluarController::class, 'printPdf'])->name('persetujuan-izin-keluar.print');
+
+        // Route untuk Penanganan Keterlambatan
+        Route::get('/penanganan-terlambat', [PenangananTerlambatController::class, 'index'])->name('penanganan-terlambat.index');
+        Route::post('/penanganan-terlambat', [PenangananTerlambatController::class, 'store'])->name('penanganan-terlambat.store');
+        Route::get('/penanganan-terlambat/{keterlambatan}/print', [PenangananTerlambatController::class, 'printPdf'])->name('penanganan-terlambat.print');
+
+        // Route untuk Verifikasi Keterlambatan
+        Route::get('/verifikasi-terlambat', [VerifikasiTerlambatController::class, 'index'])->name('verifikasi-terlambat.index');
+        Route::get('/verifikasi-terlambat/{keterlambatan}', [VerifikasiTerlambatController::class, 'show'])->name('verifikasi-terlambat.show');
+        Route::put('/verifikasi-terlambat/{keterlambatan}', [VerifikasiTerlambatController::class, 'update'])->name('verifikasi-terlambat.update');
     });
 
     // Grup Route untuk Kurikulum
@@ -139,6 +160,9 @@ Route::middleware(['auth', 'verified'])->group(function () {
         Route::get('/riwayat-izin-keluar', [PersetujuanIzinKeluarController::class, 'riwayat'])->name('persetujuan-izin-keluar.riwayat');
         Route::patch('/persetujuan-izin-keluar/{izin}/approve', [PersetujuanIzinKeluarController::class, 'approve'])->name('persetujuan-izin-keluar.approve');
         Route::patch('/persetujuan-izin-keluar/{izin}/reject', [PersetujuanIzinKeluarController::class, 'reject'])->name('persetujuan-izin-keluar.reject');
+
+        // Route baru untuk verifikasi keterlambatan via scan
+        Route::get('/verifikasi-terlambat/scan/{uuid}', [GuruKelasVerifikasiTerlambatController::class, 'scanAndVerify'])->name('verifikasi-terlambat.scan');
     });
 
     // Grup Route untuk Security
@@ -155,6 +179,10 @@ Route::middleware(['auth', 'verified'])->group(function () {
         Route::patch('/verifikasi-izin/{izin}/keluar', [SecurityVerifikasiController::class, 'verifyKeluar'])->name('verifikasi.keluar');
         Route::patch('/verifikasi-izin/{izin}/kembali', [SecurityVerifikasiController::class, 'verifyKembali'])->name('verifikasi.kembali');
         Route::get('/verifikasi-izin/{izin}/print', [SecurityVerifikasiController::class, 'printPdf'])->name('verifikasi.print');
+
+        // Route untuk Pendataan Keterlambatan
+        Route::get('/pendataan-terlambat', [PendataanTerlambatController::class, 'index'])->name('pendataan-terlambat.index');
+        Route::post('/pendataan-terlambat', [PendataanTerlambatController::class, 'store'])->name('pendataan-terlambat.store');
     });
 });
 

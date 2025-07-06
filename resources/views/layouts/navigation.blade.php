@@ -91,6 +91,9 @@
                             <x-nav-link :href="route('piket.dashboard.index')" :active="request()->routeIs('piket.dashboard.*')">
                                 {{ __('Dashboard') }}
                             </x-nav-link>
+                            <x-nav-link :href="route('piket.penanganan-terlambat.index')" :active="request()->routeIs('piket.penanganan-terlambat.*')">
+                                {{ __('Penanganan Terlambat') }}
+                            </x-nav-link>
                             <x-nav-link :href="route('piket.monitoring.index')" :active="request()->routeIs('piket.monitoring.*')">
                                 {{ __('Monitoring Izin') }}
                             </x-nav-link>
@@ -99,6 +102,9 @@
                             </x-nav-link>
                             <x-nav-link :href="route('piket.persetujuan-izin-keluar.riwayat')" :active="request()->routeIs('piket.persetujuan-izin-keluar.riwayat')">
                                 {{ __('Riwayat Izin Keluar') }}
+                            </x-nav-link>
+                            <x-nav-link :href="route('piket.verifikasi-terlambat.index')" :active="request()->routeIs('piket.verifikasi-terlambat.*')">
+                                {{ __('Verifikasi Terlambat') }}
                             </x-nav-link>
                         </div>
                     @endrole
@@ -169,6 +175,9 @@
                             </x-nav-link>
                             <x-nav-link :href="route('security.verifikasi.scan')" :active="request()->routeIs('security.verifikasi.scan')">
                                 {{ __('Pindai QR') }}
+                            </x-nav-link>
+                            <x-nav-link :href="route('security.pendataan-terlambat.index')" :active="request()->routeIs('security.pendataan-terlambat.*')">
+                                {{ __('Pendataan Terlambat') }}
                             </x-nav-link>
                         </div>
                     @endrole
