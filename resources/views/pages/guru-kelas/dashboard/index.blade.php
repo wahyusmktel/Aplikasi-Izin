@@ -94,6 +94,47 @@
                     </div>
                 </div>
             </div>
+            <!-- WIDGET BARU: Siswa Sedang di Luar Kelas -->
+            <div class="bg-white overflow-hidden shadow-sm sm:rounded-lg mt-6">
+                <div class="p-6 text-gray-900">
+                    <h3 class="font-semibold text-lg mb-4">Siswa Sedang di Luar Kelas (Real-time)</h3>
+                    <div class="overflow-x-auto">
+                        <table class="min-w-full divide-y divide-gray-200">
+                            <thead class="bg-gray-50">
+                                <tr>
+                                    <th class="px-4 py-2 text-left text-xs font-medium text-gray-500 uppercase">Siswa
+                                    </th>
+                                    <th class="px-4 py-2 text-left text-xs font-medium text-gray-500 uppercase">Kelas
+                                    </th>
+                                    <th class="px-4 py-2 text-left text-xs font-medium text-gray-500 uppercase">Tujuan
+                                    </th>
+                                    <th class="px-4 py-2 text-left text-xs font-medium text-gray-500 uppercase">Keluar
+                                        Sejak</th>
+                                </tr>
+                            </thead>
+                            <tbody class="bg-white divide-y divide-gray-200">
+                                @forelse ($siswaSedangKeluar as $izin)
+                                    <tr class="bg-yellow-50">
+                                        <td class="px-4 py-3 whitespace-nowrap font-semibold">{{ $izin->siswa->name }}
+                                        </td>
+                                        <td class="px-4 py-3 whitespace-nowrap">{{ $izin->rombel->kelas->nama_kelas }}
+                                        </td>
+                                        <td class="px-4 py-3 whitespace-nowrap">{{ $izin->tujuan }}</td>
+                                        <td class="px-4 py-3 whitespace-nowrap text-sm text-gray-600">
+                                            {{ \Carbon\Carbon::parse($izin->waktu_keluar_sebenarnya)->diffForHumans() }}
+                                        </td>
+                                    </tr>
+                                @empty
+                                    <tr>
+                                        <td colspan="4" class="px-4 py-4 text-center text-gray-500">Tidak ada siswa
+                                            yang sedang di luar kelas saat ini.</td>
+                                    </tr>
+                                @endforelse
+                            </tbody>
+                        </table>
+                    </div>
+                </div>
+            </div>
         </div>
     </div>
 </x-app-layout>

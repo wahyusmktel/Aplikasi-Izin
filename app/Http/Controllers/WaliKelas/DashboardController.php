@@ -5,6 +5,7 @@ namespace App\Http\Controllers\WaliKelas;
 use App\Http\Controllers\Controller;
 use App\Models\MasterSiswa;
 use App\Models\Perizinan;
+use App\Models\IzinMeninggalkanKelas;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Auth;
 use Illuminate\Support\Facades\DB;
@@ -47,7 +48,7 @@ class DashboardController extends Controller
             $date = now()->subDays($i)->format('Y-m-d');
             $dates->put($date, $dailyData->get($date, 0));
         }
-        
+
         $dailyChartData = [
             'labels' => $dates->keys()->map(fn($date) => \Carbon\Carbon::parse($date)->format('d M')),
             'data' => $dates->values(),
@@ -59,11 +60,19 @@ class DashboardController extends Controller
             ->latest('updated_at')
             ->take(5)
             ->get();
-        
+
+        // --- DATA BARU: Widget Izin Meninggalkan Kelas ---
+        $izinKeluarTerakhir = IzinMeninggalkanKelas::whereIn('user_id', $userIds)
+            ->with(['siswa'])
+            ->latest('updated_at')
+            ->take(5)
+            ->get();
+
         return view('pages.wali-kelas.dashboard.index', compact(
-            'statusChartData', 
+            'statusChartData',
             'dailyChartData',
-            'latestActivities'
+            'latestActivities',
+            'izinKeluarTerakhir'
         ));
     }
 }

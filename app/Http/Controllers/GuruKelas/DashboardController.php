@@ -5,6 +5,7 @@ namespace App\Http\Controllers\GuruKelas;
 use App\Http\Controllers\Controller;
 use App\Models\JadwalPelajaran;
 use App\Models\MasterGuru;
+use App\Models\IzinMeninggalkanKelas;
 use App\Models\Perizinan;
 use App\Models\Rombel;
 use Illuminate\Http\Request;
@@ -53,10 +54,19 @@ class DashboardController extends Controller
             })
             ->get();
 
+        // ==================================================
+        //      LOGIKA BARU: Siswa yang Sedang di Luar Kelas
+        // ==================================================
+        $siswaSedangKeluar = IzinMeninggalkanKelas::with(['siswa', 'rombel.kelas'])
+            ->where('status', 'diverifikasi_security') // Status: sudah diverifikasi keluar oleh satpam
+            ->whereIn('rombel_id', $rombelIds)
+            ->get();
+
         return view('pages.guru-kelas.dashboard.index', compact(
             'kelasDiajar',
             'jadwalHariIni',
-            'siswaIzinHariIni'
+            'siswaIzinHariIni',
+            'siswaSedangKeluar'
         ));
     }
 
