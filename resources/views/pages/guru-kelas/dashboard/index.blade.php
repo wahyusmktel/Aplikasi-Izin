@@ -95,7 +95,7 @@
                 </div>
             </div>
             <!-- WIDGET BARU: Siswa Sedang di Luar Kelas -->
-            <div class="bg-white overflow-hidden shadow-sm sm:rounded-lg mt-6">
+            <div class="bg-white overflow-hidden shadow-sm sm:rounded-lg mt-6 mb-6">
                 <div class="p-6 text-gray-900">
                     <h3 class="font-semibold text-lg mb-4">Siswa Sedang di Luar Kelas (Real-time)</h3>
                     <div class="overflow-x-auto">
@@ -135,6 +135,85 @@
                     </div>
                 </div>
             </div>
+
+            <!-- WIDGET BARU: Statistik Izin Keluar Kelas -->
+            <div class="grid grid-cols-1 lg:grid-cols-2 gap-6">
+                <div class="bg-white p-6 rounded-lg shadow">
+                    <h3 class="font-semibold mb-4">Top 5 Siswa Sering Izin Keluar</h3>
+                    <canvas id="topSiswaIzinKeluarChart"></canvas>
+                </div>
+                <div class="bg-white p-6 rounded-lg shadow">
+                    <h3 class="font-semibold mb-4">Top 5 Tujuan Izin Keluar</h3>
+                    <canvas id="tujuanIzinKeluarChart"></canvas>
+                </div>
+            </div>
+
         </div>
     </div>
+
+    @push('scripts')
+        <script>
+            document.addEventListener('DOMContentLoaded', function() {
+                const topSiswaData = @json($topSiswaIzinKeluarChartData);
+                const tujuanData = @json($tujuanIzinKeluarChartData);
+
+                // Bar Chart Top Siswa Izin Keluar
+                if (document.getElementById('topSiswaIzinKeluarChart') && topSiswaData.data.length > 0) {
+                    new Chart(document.getElementById('topSiswaIzinKeluarChart').getContext('2d'), {
+                        type: 'bar',
+                        data: {
+                            labels: topSiswaData.labels,
+                            datasets: [{
+                                label: 'Jumlah Izin Keluar',
+                                data: topSiswaData.data,
+                                backgroundColor: 'rgba(255, 159, 64, 0.7)'
+                            }]
+                        },
+                        options: {
+                            indexAxis: 'y',
+                            responsive: true,
+                            plugins: {
+                                legend: {
+                                    display: false
+                                }
+                            },
+                            scales: {
+                                x: {
+                                    beginAtZero: true,
+                                    ticks: {
+                                        stepSize: 1
+                                    }
+                                }
+                            }
+                        }
+                    });
+                }
+
+                // Doughnut Chart Top Tujuan Izin Keluar
+                if (document.getElementById('tujuanIzinKeluarChart') && tujuanData.data.length > 0) {
+                    new Chart(document.getElementById('tujuanIzinKeluarChart').getContext('2d'), {
+                        type: 'doughnut',
+                        data: {
+                            labels: tujuanData.labels,
+                            datasets: [{
+                                data: tujuanData.data,
+                                backgroundColor: ['rgba(153, 102, 255, 0.8)', 'rgba(255, 99, 132, 0.8)',
+                                    'rgba(75, 192, 192, 0.8)', 'rgba(255, 205, 86, 0.8)',
+                                    'rgba(201, 203, 207, 0.8)'
+                                ]
+                            }]
+                        },
+                        options: {
+                            responsive: true,
+                            plugins: {
+                                legend: {
+                                    position: 'bottom'
+                                }
+                            }
+                        }
+                    });
+                }
+            });
+        </script>
+    @endpush
 </x-app-layout>

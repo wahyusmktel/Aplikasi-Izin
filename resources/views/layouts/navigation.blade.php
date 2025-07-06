@@ -151,6 +151,10 @@
                             <x-nav-link :href="route('guru-kelas.persetujuan-izin-keluar.index')" :active="request()->routeIs('guru-kelas.persetujuan-izin-keluar.*')">
                                 {{ __('Persetujuan Izin Keluar') }}
                             </x-nav-link>
+
+                            <x-nav-link :href="route('guru-kelas.persetujuan-izin-keluar.riwayat')" :active="request()->routeIs('guru-kelas.persetujuan-izin-keluar.riwayat')">
+                                {{ __('Riwayat Persetujuan') }}
+                            </x-nav-link>
                         </div>
                     @endrole
 
