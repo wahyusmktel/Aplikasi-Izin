@@ -80,6 +80,19 @@ class DashboardController extends Controller
             ->take(5)
             ->pluck('total', 'tujuan');
 
+        // ==================================================
+        //      LOGIKA BARU: Widget Izin Keluar Hari Ini
+        // ==================================================
+        $izinKeluarHariIni = IzinMeninggalkanKelas::with([
+            'siswa.masterSiswa.rombels.kelas',
+            'jadwalPelajaran.mataPelajaran',
+            'jadwalPelajaran.guru'
+        ])
+            ->whereDate('created_at', today())
+            ->latest()
+            ->get();
+        // ==================================================
+
 
         // ==================================================
         //      BAGIAN 3: MENGIRIM SEMUA DATA KE VIEW
@@ -96,6 +109,7 @@ class DashboardController extends Controller
             'topSiswaIzinKeluar' => $topSiswaIzinKeluar,
             'rombelIzinKeluarChartData' => ['labels' => $rombelIzinKeluarChart->pluck('nama_kelas'), 'data' => $rombelIzinKeluarChart->pluck('total_izin')],
             'tujuanIzinKeluarChartData' => ['labels' => $tujuanIzinKeluarChart->keys(), 'data' => $tujuanIzinKeluarChart->values()],
+            'izinKeluarHariIni' => $izinKeluarHariIni,
         ]);
     }
 }

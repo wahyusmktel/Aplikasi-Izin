@@ -8,6 +8,8 @@ use App\Models\MasterGuru;
 use App\Models\IzinMeninggalkanKelas;
 use App\Models\Perizinan;
 use App\Models\Rombel;
+use App\Models\User;
+use Illuminate\Support\Facades\DB;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Auth;
 
@@ -62,11 +64,43 @@ class DashboardController extends Controller
             ->whereIn('rombel_id', $rombelIds)
             ->get();
 
+        // ==================================================
+        //      LOGIKA BARU: Statistik Izin Keluar Kelas
+        // ==================================================
+
+        // 1. Grafik: Top 5 Siswa Paling Sering Izin Keluar
+        $topSiswaIzinKeluar = IzinMeninggalkanKelas::select('user_id', DB::raw('count(*) as total'))
+            ->whereIn('rombel_id', $rombelIds)
+            ->groupBy('user_id')
+            ->orderBy('total', 'desc')
+            ->take(5)
+            ->get();
+        $topSiswaUserIds = $topSiswaIzinKeluar->pluck('user_id');
+        $topSiswaUsers = User::whereIn('id', $topSiswaUserIds)->get()->keyBy('id');
+        $topSiswaIzinKeluarChartData = [
+            'labels' => $topSiswaIzinKeluar->map(fn($item) => $topSiswaUsers->get($item->user_id)->name ?? 'Siswa Dihapus'),
+            'data' => $topSiswaIzinKeluar->pluck('total'),
+        ];
+
+        // 2. Grafik: Top 5 Tujuan Izin Keluar
+        $tujuanIzinKeluarChart = IzinMeninggalkanKelas::select('tujuan', DB::raw('count(*) as total'))
+            ->whereIn('rombel_id', $rombelIds)
+            ->groupBy('tujuan')
+            ->orderBy('total', 'desc')
+            ->take(5)
+            ->pluck('total', 'tujuan');
+        $tujuanIzinKeluarChartData = [
+            'labels' => $tujuanIzinKeluarChart->keys(),
+            'data' => $tujuanIzinKeluarChart->values(),
+        ];
+
         return view('pages.guru-kelas.dashboard.index', compact(
             'kelasDiajar',
             'jadwalHariIni',
             'siswaIzinHariIni',
-            'siswaSedangKeluar'
+            'siswaSedangKeluar',
+            'topSiswaIzinKeluarChartData', // <-- Kirim data baru
+            'tujuanIzinKeluarChartData'   // <-- Kirim data baru
         ));
     }
 

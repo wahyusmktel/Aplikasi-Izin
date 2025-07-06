@@ -76,6 +76,40 @@ class PersetujuanIzinKeluarController extends Controller
         return back();
     }
 
+    /**
+     * Menampilkan halaman riwayat persetujuan izin keluar oleh guru kelas.
+     */
+    public function riwayat(Request $request)
+    {
+        $guruKelasId = Auth::id();
+
+        $query = IzinMeninggalkanKelas::with(['siswa.masterSiswa.rombels.kelas', 'penolak'])
+            // Tampilkan yang disetujui atau ditolak oleh guru ini
+            ->where(function ($q) use ($guruKelasId) {
+                $q->where('guru_kelas_approval_id', $guruKelasId)
+                    ->orWhere('ditolak_oleh', $guruKelasId);
+            });
+
+        // Filter berdasarkan pencarian nama siswa
+        if ($request->filled('search')) {
+            $query->whereHas('siswa', function ($q) use ($request) {
+                $q->where('name', 'like', '%' . $request->search . '%');
+            });
+        }
+
+        // Filter berdasarkan rentang tanggal persetujuan/penolakan
+        if ($request->filled('start_date') && $request->filled('end_date')) {
+            $query->where(function ($q) use ($request) {
+                $q->whereDate('guru_kelas_approved_at', '>=', $request->start_date)
+                    ->whereDate('guru_kelas_approved_at', '<=', $request->end_date);
+            });
+        }
+
+        $riwayatIzin = $query->latest('updated_at')->paginate(20);
+
+        return view('pages.guru-kelas.persetujuan-izin-keluar.riwayat', compact('riwayatIzin'));
+    }
+
     private function getNamaHari($dayOfWeek)
     {
         $hari = [0 => 'Minggu', 1 => 'Senin', 2 => 'Selasa', 3 => 'Rabu', 4 => 'Kamis', 5 => 'Jumat', 6 => 'Sabtu'];

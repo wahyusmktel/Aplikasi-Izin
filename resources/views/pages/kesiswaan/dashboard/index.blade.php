@@ -73,6 +73,66 @@
             <!--     BAGIAN 2: STATISTIK IZIN MENINGGALKAN KELAS      -->
             <!-- ================================================== -->
             <h3 class="text-lg font-semibold text-gray-700 mb-4 mt-12">Statistik Izin Meninggalkan Kelas</h3>
+
+            <!-- Widget Monitoring Izin Keluar Hari Ini (BARU) -->
+            <div class="bg-white overflow-hidden shadow-sm sm:rounded-lg mb-6">
+                <div class="p-6 text-gray-900">
+                    <h3 class="font-semibold text-lg mb-4">Aktivitas Izin Keluar Kelas Hari Ini</h3>
+                    <div class="overflow-x-auto">
+                        <table class="min-w-full divide-y divide-gray-200">
+                            <thead class="bg-gray-50">
+                                <tr>
+                                    <th class="px-4 py-2 text-left text-xs font-medium text-gray-500 uppercase">Waktu
+                                    </th>
+                                    <th class="px-4 py-2 text-left text-xs font-medium text-gray-500 uppercase">Siswa
+                                    </th>
+                                    <th class="px-4 py-2 text-left text-xs font-medium text-gray-500 uppercase">Kelas
+                                    </th>
+                                    <th class="px-4 py-2 text-left text-xs font-medium text-gray-500 uppercase">Status
+                                    </th>
+                                    <th class="px-4 py-2 text-right text-xs font-medium text-gray-500 uppercase">Aksi
+                                    </th>
+                                </tr>
+                            </thead>
+                            <tbody class="divide-y divide-gray-200 text-sm">
+                                @forelse ($izinKeluarHariIni as $izin)
+                                    <tr x-data="{ item: {{ json_encode($izin) }} }">
+                                        <td class="px-4 py-2 whitespace-nowrap">
+                                            {{ \Carbon\Carbon::parse($izin->created_at)->format('H:i') }}</td>
+                                        <td class="px-4 py-2 whitespace-nowrap font-semibold">{{ $izin->siswa->name }}
+                                        </td>
+                                        <td class="px-4 py-2 whitespace-nowrap">
+                                            {{ $izin->siswa->masterSiswa?->rombels->first()?->kelas->nama_kelas ?? 'N/A' }}
+                                        </td>
+                                        <td class="px-4 py-2 whitespace-nowrap">
+                                            <span
+                                                class="px-2 inline-flex text-xs leading-5 font-semibold rounded-full
+                                                @if (in_array($izin->status, ['selesai', 'terlambat'])) bg-gray-100 text-gray-800
+                                                @elseif(in_array($izin->status, ['disetujui_guru_piket', 'diverifikasi_security'])) bg-green-100 text-green-800
+                                                @elseif($izin->status == 'ditolak') bg-red-100 text-red-800
+                                                @else bg-yellow-100 text-yellow-800 @endif">
+                                                {{ str_replace('_', ' ', Str::title($izin->status)) }}
+                                            </span>
+                                        </td>
+                                        <td class="px-4 py-2 whitespace-nowrap text-right">
+                                            <button @click="$store.detailModal.open(item)"
+                                                class="text-indigo-600 hover:text-indigo-900 text-xs">
+                                                Lihat Detail
+                                            </button>
+                                        </td>
+                                    </tr>
+                                @empty
+                                    <tr>
+                                        <td colspan="5" class="py-4 text-center text-gray-500">Belum ada aktivitas
+                                            izin keluar kelas hari ini.</td>
+                                    </tr>
+                                @endforelse
+                            </tbody>
+                        </table>
+                    </div>
+                </div>
+            </div>
+
             <div class="grid grid-cols-1 lg:grid-cols-3 gap-6">
                 <!-- Widget Top Siswa Izin Keluar -->
                 <div class="lg:col-span-1 bg-white p-6 rounded-lg shadow">
@@ -105,6 +165,9 @@
 
         </div>
     </div>
+
+    <!-- Panggil Modal -->
+    @include('pages.kesiswaan.dashboard.partials.modal-lihat-izin-keluar')
 
     @push('scripts')
         <script>
