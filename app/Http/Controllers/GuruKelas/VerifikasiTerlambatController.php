@@ -5,6 +5,7 @@ namespace App\Http\Controllers\GuruKelas;
 use App\Http\Controllers\Controller;
 use App\Models\Keterlambatan;
 use Illuminate\Http\Request;
+use Illuminate\Support\Facades\Auth;
 
 class VerifikasiTerlambatController extends Controller
 {
@@ -25,7 +26,11 @@ class VerifikasiTerlambatController extends Controller
 
         // Jika surat valid dan statusnya 'diverifikasi_piket'
         if ($keterlambatan->status === 'diverifikasi_piket') {
-            $keterlambatan->update(['status' => 'selesai']);
+            $keterlambatan->update([
+                'status' => 'selesai',
+                'verifikasi_oleh_guru_kelas_id' => Auth::id(),
+                'waktu_verifikasi_guru_kelas' => now(),
+            ]);
 
             return view('pages.guru-kelas.verifikasi-terlambat.hasil', [
                 'success' => true,

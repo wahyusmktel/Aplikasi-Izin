@@ -9,6 +9,7 @@ use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Auth;
 use Illuminate\Support\Facades\Log;
 use Barryvdh\DomPDF\Facade\Pdf;
+use Illuminate\Support\Carbon;
 use SimpleSoftwareIO\QrCode\Facades\QrCode;
 
 class VerifikasiTerlambatController extends Controller
@@ -37,40 +38,42 @@ class VerifikasiTerlambatController extends Controller
         $request->validate(['tindak_lanjut_piket' => 'nullable|string']);
 
         try {
-            // 1. Cari jadwal pelajaran yang sedang berlangsung
+            // 1. Ambil rombel dan waktu SAAT SISWA DICATAT oleh security
             $rombelSiswa = $keterlambatan->siswa->rombels()->first();
-            $jadwalSaatIni = null;
+            $waktuTercatat = Carbon::parse($keterlambatan->waktu_dicatat_security);
+            $namaHari = $waktuTercatat->isoFormat('dddd');
+            $waktu = $waktuTercatat->format('H:i:s');
+
+            $jadwalSaatItu = null;
             if ($rombelSiswa) {
-                $namaHariIni = now()->isoFormat('dddd');
-                $waktuSaatIni = now()->format('H:i:s');
-                $jadwalSaatIni = JadwalPelajaran::where('rombel_id', $rombelSiswa->id)
-                    ->where('hari', $namaHariIni)
-                    ->where('jam_mulai', '<=', $waktuSaatIni)
-                    ->where('jam_selesai', '>=', $waktuSaatIni)
+                // Cari jadwal pelajaran berdasarkan HARI dan WAKTU saat siswa tercatat terlambat
+                $jadwalSaatItu = JadwalPelajaran::where('rombel_id', $rombelSiswa->id)
+                    ->where('hari', $namaHari)
+                    ->where('jam_mulai', '<=', $waktu)
+                    ->where('jam_selesai', '>=', $waktu)
                     ->first();
             }
 
-            // 2. Update data keterlambatan
+            // 2. Update data keterlambatan dengan ID jadwal yang ditemukan
             $keterlambatan->update([
                 'tindak_lanjut_piket' => $request->tindak_lanjut_piket,
                 'diverifikasi_oleh_piket_id' => Auth::id(),
                 'waktu_verifikasi_piket' => now(),
-                'jadwal_pelajaran_id' => $jadwalSaatIni?->id,
+                'jadwal_pelajaran_id' => $jadwalSaatItu?->id,
                 'status' => 'diverifikasi_piket',
             ]);
 
-            // 3. Siapkan data untuk PDF
+            // 3. Siapkan data untuk PDF dengan me-load ulang semua relasi
             $keterlambatan->load(['siswa.rombels.kelas', 'guruPiket', 'jadwalPelajaran.mataPelajaran', 'jadwalPelajaran.guru']);
 
-            // QR Code untuk Verifikasi Publik
+            // 4. Buat QR Codes
             $publicUrl = route('verifikasi.surat-terlambat', $keterlambatan->uuid);
             $publicQrCode = 'data:image/svg+xml;base64,' . base64_encode(QrCode::format('svg')->size(60)->generate($publicUrl));
 
-            // QR Code untuk Verifikasi Guru Kelas
-            $guruKelasUrl = route('guru-kelas.verifikasi-terlambat.scan', $keterlambatan->uuid); // Route ini akan kita buat nanti
+            $guruKelasUrl = route('guru-kelas.verifikasi-terlambat.scan', $keterlambatan->uuid);
             $guruKelasQrCode = 'data:image/svg+xml;base64,' . base64_encode(QrCode::format('svg')->size(60)->generate($guruKelasUrl));
 
-            // 4. Generate & stream PDF
+            // 5. Generate & stream PDF
             $pdf = Pdf::loadView('pdf.surat-izin-masuk-kelas', compact('keterlambatan', 'publicQrCode', 'guruKelasQrCode'));
 
             return $pdf->stream('surat-izin-masuk-' . $keterlambatan->siswa->nama_lengkap . '.pdf');

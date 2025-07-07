@@ -20,6 +20,8 @@ class Keterlambatan extends Model
         'waktu_verifikasi_piket',
         'tindak_lanjut_piket',
         'jadwal_pelajaran_id',
+        'verifikasi_oleh_guru_kelas_id',
+        'waktu_verifikasi_guru_kelas',
         'status',
     ];
 
@@ -44,5 +46,9 @@ class Keterlambatan extends Model
     public function jadwalPelajaran()
     {
         return $this->belongsTo(JadwalPelajaran::class);
+    }
+    public function guruKelasVerifier()
+    {
+        return $this->belongsTo(User::class, 'verifikasi_oleh_guru_kelas_id');
     }
 }
