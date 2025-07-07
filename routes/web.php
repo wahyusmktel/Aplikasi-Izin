@@ -32,6 +32,8 @@ use App\Http\Controllers\Security\PendataanTerlambatController;
 use App\Http\Controllers\Piket\VerifikasiTerlambatController;
 use App\Http\Controllers\PublicVerifikasiController;
 use App\Http\Controllers\GuruKelas\VerifikasiTerlambatController as GuruKelasVerifikasiTerlambatController;
+use App\Http\Controllers\Dispensasi\PengajuanDispensasiController;
+use App\Http\Controllers\Kesiswaan\PersetujuanDispensasiController;
 
 // ==================================
 //     ROUTE PUBLIK UNTUK VERIFIKASI
@@ -46,6 +48,9 @@ Route::get('/verifikasi/surat/{uuid}', [VerifikasiController::class, 'show'])->n
 // ==================================================
 Route::get('/verifikasi/surat-terlambat/{uuid}', [PublicVerifikasiController::class, 'showSuratTerlambat'])
     ->name('verifikasi.surat-terlambat');
+
+Route::get('/verifikasi/dispensasi/{dispensasi}', [PublicVerifikasiController::class, 'showDispensasi'])
+    ->name('verifikasi.dispensasi');
 
 Route::get('/', function () {
     return view('welcome');
@@ -97,6 +102,13 @@ Route::middleware(['auth', 'verified'])->group(function () {
         Route::get('/dashboard', [DashboardController::class, 'index'])->name('dashboard.index');
         Route::get('/monitoring-izin', [MonitoringIzinController::class, 'index'])->name('monitoring-izin.index');
         Route::get('/riwayat-izin-keluar', [MonitoringIzinController::class, 'riwayatIzinKeluar'])->name('riwayat-izin-keluar.index');
+
+        // Route untuk Persetujuan Dispensasi
+        Route::get('/persetujuan-dispensasi', [PersetujuanDispensasiController::class, 'index'])->name('persetujuan-dispensasi.index');
+        Route::get('/persetujuan-dispensasi/{dispensasi}', [PersetujuanDispensasiController::class, 'show'])->name('persetujuan-dispensasi.show');
+        Route::patch('/persetujuan-dispensasi/{dispensasi}/approve', [PersetujuanDispensasiController::class, 'approve'])->name('persetujuan-dispensasi.approve');
+        Route::patch('/persetujuan-dispensasi/{dispensasi}/reject', [PersetujuanDispensasiController::class, 'reject'])->name('persetujuan-dispensasi.reject');
+        Route::get('/persetujuan-dispensasi/{dispensasi}/print', [PersetujuanDispensasiController::class, 'printPdf'])->name('persetujuan-dispensasi.print');
     });
 
     // Grup Route untuk Siswa
@@ -183,6 +195,13 @@ Route::middleware(['auth', 'verified'])->group(function () {
         // Route untuk Pendataan Keterlambatan
         Route::get('/pendataan-terlambat', [PendataanTerlambatController::class, 'index'])->name('pendataan-terlambat.index');
         Route::post('/pendataan-terlambat', [PendataanTerlambatController::class, 'store'])->name('pendataan-terlambat.store');
+    });
+
+    // Grup Route untuk Pengajuan Dispensasi (bisa diakses beberapa peran)
+    Route::middleware(['auth'])->prefix('dispensasi')->name('dispensasi.')->group(function () {
+        Route::get('/pengajuan', [PengajuanDispensasiController::class, 'index'])->name('pengajuan.index');
+        Route::get('/pengajuan/create', [PengajuanDispensasiController::class, 'create'])->name('pengajuan.create');
+        Route::post('/pengajuan', [PengajuanDispensasiController::class, 'store'])->name('pengajuan.store');
     });
 });
 

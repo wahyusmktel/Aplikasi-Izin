@@ -74,6 +74,9 @@
                         <x-nav-link :href="route('kesiswaan.riwayat-izin-keluar.index')" :active="request()->routeIs('kesiswaan.riwayat-izin-keluar.*')">
                             {{ __('Izin Keluar Kelas') }}
                         </x-nav-link>
+                        <x-nav-link :href="route('kesiswaan.persetujuan-dispensasi.index')" :active="request()->routeIs('kesiswaan.persetujuan-dispensasi.*')">
+                            {{ __('Persetujuan Dispensasi') }}
+                        </x-nav-link>
                     @endrole
                     <!-- Menu Guru BK -->
                     @role('Guru BK')
@@ -160,6 +163,9 @@
 
                             <x-nav-link :href="route('guru-kelas.persetujuan-izin-keluar.riwayat')" :active="request()->routeIs('guru-kelas.persetujuan-izin-keluar.riwayat')">
                                 {{ __('Riwayat Persetujuan') }}
+                            </x-nav-link>
+                            <x-nav-link :href="route('dispensasi.pengajuan.index')" :active="request()->routeIs('dispensasi.pengajuan.*')">
+                                {{ __('Pengajuan Dispensasi') }}
                             </x-nav-link>
                         </div>
                     @endrole
