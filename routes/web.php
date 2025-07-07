@@ -34,6 +34,8 @@ use App\Http\Controllers\PublicVerifikasiController;
 use App\Http\Controllers\GuruKelas\VerifikasiTerlambatController as GuruKelasVerifikasiTerlambatController;
 use App\Http\Controllers\Dispensasi\PengajuanDispensasiController;
 use App\Http\Controllers\Kesiswaan\PersetujuanDispensasiController;
+use App\Http\Controllers\Prakerin\IndustriController;
+use App\Http\Controllers\Prakerin\PenempatanController;
 
 // ==================================
 //     ROUTE PUBLIK UNTUK VERIFIKASI
@@ -202,6 +204,12 @@ Route::middleware(['auth', 'verified'])->group(function () {
         Route::get('/pengajuan', [PengajuanDispensasiController::class, 'index'])->name('pengajuan.index');
         Route::get('/pengajuan/create', [PengajuanDispensasiController::class, 'create'])->name('pengajuan.create');
         Route::post('/pengajuan', [PengajuanDispensasiController::class, 'store'])->name('pengajuan.store');
+    });
+
+    // Grup Route untuk Prakerin
+    Route::middleware(['role:Koordinator Prakerin'])->prefix('prakerin')->name('prakerin.')->group(function () {
+        Route::resource('industri', IndustriController::class);
+        Route::resource('penempatan', PenempatanController::class);
     });
 });
 

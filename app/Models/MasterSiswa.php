@@ -42,4 +42,9 @@ class MasterSiswa extends Model
     {
         return $this->belongsToMany(Dispensasi::class, 'dispensasi_siswa');
     }
+
+    public function penempatan()
+    {
+        return $this->hasOne(PrakerinPenempatan::class, 'master_siswa_id');
+    }
 }
