@@ -37,4 +37,9 @@ class MasterSiswa extends Model
             'id'              // Local key di tabel users
         );
     }
+
+    public function dispensasi()
+    {
+        return $this->belongsToMany(Dispensasi::class, 'dispensasi_siswa');
+    }
 }
