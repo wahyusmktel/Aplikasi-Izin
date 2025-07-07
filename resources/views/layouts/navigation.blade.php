@@ -173,6 +173,15 @@
                             <x-nav-link :href="route('dispensasi.pengajuan.index')" :active="request()->routeIs('dispensasi.pengajuan.*')">
                                 {{ __('Pengajuan Dispensasi') }}
                             </x-nav-link>
+                            {{-- Tampilkan menu hanya jika guru menjadi pembimbing --}}
+                            @if (Auth::user()->masterGuru?->penempatan()->where('status', 'aktif')->exists())
+                                <x-nav-link :href="route('pembimbing-prakerin.monitoring.index')" :active="request()->routeIs('pembimbing-prakerin.monitoring.*')">
+                                    {{ __('Monitoring Prakerin') }}
+                                </x-nav-link>
+                            @endif
+                            {{-- <x-nav-link :href="route('pembimbing-prakerin.monitoring.index')" :active="request()->routeIs('pembimbing-prakerin.monitoring.*')">
+                                {{ __('Monitoring Prakerin') }}
+                            </x-nav-link> --}}
                         </div>
                     @endrole
 

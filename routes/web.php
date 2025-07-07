@@ -37,6 +37,7 @@ use App\Http\Controllers\Kesiswaan\PersetujuanDispensasiController;
 use App\Http\Controllers\Prakerin\IndustriController;
 use App\Http\Controllers\Prakerin\PenempatanController;
 use App\Http\Controllers\Prakerin\JurnalSiswaController;
+use App\Http\Controllers\Prakerin\MonitoringPembimbingController;
 
 // ==================================
 //     ROUTE PUBLIK UNTUK VERIFIKASI
@@ -215,6 +216,13 @@ Route::middleware(['auth', 'verified'])->group(function () {
     Route::middleware(['role:Koordinator Prakerin'])->prefix('prakerin')->name('prakerin.')->group(function () {
         Route::resource('industri', IndustriController::class);
         Route::resource('penempatan', PenempatanController::class);
+    });
+
+    // Grup Route untuk Guru Pembimbing (bisa diakses Guru Kelas)
+    Route::middleware(['role:Guru Kelas'])->prefix('pembimbing-prakerin')->name('pembimbing-prakerin.')->group(function () {
+        Route::get('/monitoring', [MonitoringPembimbingController::class, 'index'])->name('monitoring.index');
+        Route::get('/monitoring/{penempatan}', [MonitoringPembimbingController::class, 'show'])->name('monitoring.show');
+        Route::patch('/monitoring/jurnal/{jurnal}', [MonitoringPembimbingController::class, 'updateJurnal'])->name('monitoring.updateJurnal');
     });
 });
 
