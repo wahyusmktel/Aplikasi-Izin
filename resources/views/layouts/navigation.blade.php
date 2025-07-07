@@ -30,6 +30,12 @@
                         <x-nav-link :href="route('siswa.izin-keluar-kelas.index')" :active="request()->routeIs('siswa.izin-keluar-kelas.*')">
                             {{ __('Izin Keluar Kelas') }}
                         </x-nav-link>
+                        {{-- Tampilkan menu hanya jika siswa sedang prakerin --}}
+                        @if (Auth::user()->masterSiswa?->penempatan()->where('status', 'aktif')->exists())
+                            <x-nav-link :href="route('siswa.jurnal-prakerin.index')" :active="request()->routeIs('siswa.jurnal-prakerin.*')">
+                                {{ __('Jurnal Prakerin') }}
+                            </x-nav-link>
+                        @endif
                     @endrole
                     @role('Wali Kelas')
                         <x-nav-link :href="route('wali-kelas.dashboard.index')" :active="request()->routeIs('wali-kelas.dashboard.*')">

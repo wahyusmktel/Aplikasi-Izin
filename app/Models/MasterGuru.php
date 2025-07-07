@@ -28,4 +28,9 @@ class MasterGuru extends Model
     {
         return $this->hasMany(JadwalPelajaran::class);
     }
+
+    public function penempatan()
+    {
+        return $this->hasMany(PrakerinPenempatan::class, 'master_guru_id');
+    }
 }

@@ -36,6 +36,7 @@ use App\Http\Controllers\Dispensasi\PengajuanDispensasiController;
 use App\Http\Controllers\Kesiswaan\PersetujuanDispensasiController;
 use App\Http\Controllers\Prakerin\IndustriController;
 use App\Http\Controllers\Prakerin\PenempatanController;
+use App\Http\Controllers\Prakerin\JurnalSiswaController;
 
 // ==================================
 //     ROUTE PUBLIK UNTUK VERIFIKASI
@@ -120,6 +121,10 @@ Route::middleware(['auth', 'verified'])->group(function () {
         // Route untuk Izin Meninggalkan Kelas
         Route::get('/izin-keluar-kelas', [IzinMeninggalkanKelasController::class, 'index'])->name('izin-keluar-kelas.index');
         Route::post('/izin-keluar-kelas', [IzinMeninggalkanKelasController::class, 'store'])->name('izin-keluar-kelas.store');
+
+        // Route untuk Jurnal Prakerin
+        Route::get('/jurnal-prakerin', [JurnalSiswaController::class, 'index'])->name('jurnal-prakerin.index');
+        Route::post('/jurnal-prakerin', [JurnalSiswaController::class, 'store'])->name('jurnal-prakerin.store');
     });
 
     // Grup Route untuk Guru BK
