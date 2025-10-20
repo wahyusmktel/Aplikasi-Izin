@@ -9,7 +9,12 @@
         <div class="max-w-7xl mx-auto sm:px-6 lg:px-8">
             <div class="bg-white overflow-hidden shadow-sm sm:rounded-lg">
                 <div class="p-6 text-gray-900">
-                    <div class="flex justify-end mb-4">
+                    <div class="flex justify-end mb-4 gap-2">
+                        <!-- Tombol Impor Excel (Baru) -->
+                        <x-secondary-button x-data=""
+                            x-on:click.prevent="$dispatch('open-modal', 'import-guru-modal')">
+                            {{ __('Impor Excel') }}
+                        </x-secondary-button>
                         <a href="{{ route('kurikulum.master-guru.create') }}">
                             <x-primary-button>{{ __('Tambah Guru') }}</x-primary-button>
                         </a>
@@ -81,4 +86,38 @@
             </div>
         </div>
     </div>
+    <!-- Modal untuk Impor Excel (Baru) -->
+    <x-modal name="import-guru-modal" focusable>
+        <form method="post" action="{{ route('kurikulum.master-guru.import') }}" class="p-6"
+            enctype="multipart/form-data">
+            @csrf
+
+            <h2 class="text-lg font-medium text-gray-900">
+                {{ __('Impor Data Master Guru') }}
+            </h2>
+
+            <p class="mt-1 text-sm text-gray-600">
+                {{ __('Unggah file Excel untuk impor data guru. Pastikan file memiliki kolom: ') }}
+                <code class="font-bold">nuptk</code> dan
+                <code class="font-bold">nama_lengkap</code>.
+            </p>
+
+            <div class="mt-6">
+                <x-input-label for="file_import" value="{{ __('Pilih File Excel') }}" />
+                <x-text-input id="file_import" name="file_import" type="file" class="mt-1 block w-full" required
+                    accept=".xlsx, .xls" />
+                <x-input-error :messages="$errors->get('file_import')" class="mt-2" />
+            </div>
+
+            <div class="mt-6 flex justify-end">
+                <x-secondary-button x-on:click="$dispatch('close')">
+                    {{ __('Batal') }}
+                </x-secondary-button>
+
+                <x-primary-button class="ms-3">
+                    {{ __('Impor Data') }}
+                </x-primary-button>
+            </div>
+        </form>
+    </x-modal>
 </x-app-layout>

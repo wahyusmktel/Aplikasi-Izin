@@ -5,6 +5,8 @@ namespace App\Http\Controllers\Kurikulum;
 use App\Http\Controllers\Controller;
 use App\Models\MataPelajaran;
 use Illuminate\Http\Request;
+use Maatwebsite\Excel\Facades\Excel;
+use App\Imports\MataPelajaranImport;
 use Illuminate\Support\Facades\Log;
 
 class MataPelajaranController extends Controller
@@ -79,5 +81,34 @@ class MataPelajaranController extends Controller
             toast('Gagal menghapus mata pelajaran.', 'error');
             return back();
         }
+    }
+
+    public function import(Request $request)
+    {
+        // Validasi file yang diunggah
+        $request->validate([
+            'file_import' => 'required|mimes:xlsx,xls,csv',
+        ]);
+
+        try {
+            Excel::import(new MataPelajaranImport, $request->file('file_import'));
+
+            // Ganti 'toast' dengan notifikasi pilihan Anda (misal: SweetAlert)
+            toast('Data mata pelajaran berhasil diimpor!', 'success');
+        } catch (\Maatwebsite\Excel\Validators\ValidationException $e) {
+            $failures = $e->failures();
+            $errorMessages = [];
+            foreach ($failures as $failure) {
+                $errorMessages[] = "Baris " . $failure->row() . ": " . implode(', ', $failure->errors());
+            }
+
+            // Tampilkan error validasi per baris
+            toast(implode('<br>', $errorMessages), 'error');
+        } catch (\Exception $e) {
+            // Tangani error umum lainnya
+            toast('Terjadi kesalahan saat mengimpor data: ' . $e->getMessage(), 'error');
+        }
+
+        return redirect()->route('kurikulum.mata-pelajaran.index');
     }
 }

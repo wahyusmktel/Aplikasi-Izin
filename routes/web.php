@@ -169,6 +169,9 @@ Route::middleware(['auth', 'verified'])->group(function () {
 
         //Route untuk Jam Pelajaran
         Route::resource('jam-pelajaran', JamPelajaranController::class);
+
+        Route::post('mata-pelajaran/import', [MataPelajaranController::class, 'import'])->name('mata-pelajaran.import');
+        Route::post('master-guru/import', [MasterGuruController::class, 'import'])->name('master-guru.import');
     });
 
     // Grup Route untuk Guru Kelas

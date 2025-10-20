@@ -10,6 +10,9 @@ use Illuminate\Support\Facades\DB;
 use Illuminate\Support\Facades\Hash;
 use Illuminate\Support\Facades\Log;
 use Spatie\Permission\Models\Role; // <-- Tambahkan ini
+use Maatwebsite\Excel\Facades\Excel;
+use App\Imports\GuruImport;
+use Illuminate\Support\Facades\Validator;
 
 class MasterGuruController extends Controller
 {
@@ -125,5 +128,41 @@ class MasterGuruController extends Controller
             toast('Terjadi kesalahan saat membuat akun.', 'error');
             return back();
         }
+    }
+
+    /**
+     * Menangani proses impor data guru dari file Excel.
+     */
+    public function import(Request $request)
+    {
+        $validator = Validator::make($request->all(), [
+            'file_import' => 'required|mimes:xlsx,xls',
+        ]);
+
+        if ($validator->fails()) {
+            toast($validator->errors()->first(), 'error');
+            return redirect()->back();
+        }
+
+        try {
+            Excel::import(new GuruImport, $request->file('file_import'));
+
+            toast('Data guru berhasil diimpor!', 'success');
+        } catch (\Maatwebsite\Excel\Validators\ValidationException $e) {
+            $failures = $e->failures();
+            $errorMessages = [];
+            foreach ($failures as $failure) {
+                // Kumpulkan semua pesan error dari baris yang gagal
+                $errorMessages[] = "Baris " . $failure->row() . ": " . implode(', ', $failure->errors());
+            }
+
+            // Tampilkan pesan error yang detail
+            toast(implode('<br>', $errorMessages), 'error')->persistent(true);
+        } catch (\Exception $e) {
+            // Tangani error umum lainnya
+            toast('Terjadi kesalahan: ' . $e->getMessage(), 'error');
+        }
+
+        return redirect()->route('kurikulum.master-guru.index');
     }
 }
